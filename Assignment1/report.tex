@@ -1,0 +1,54 @@
+\documentclass[12pt,a4paper,hidelinks]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+\usepackage{listings}
+\lstset{
+	breaklines=true,
+	tabsize=4,
+	numbers=left
+}
+\author{Bert Peters --- s1147919}
+\title{Social Network Analysis for Computer Scientists --- Assignment 1}
+\begin{document}
+
+\maketitle
+
+\section{Exercise 1: Neighbourhoods}
+
+\section{Exercise 3: An Online Social Network}
+
+\subsection{Question 1: Number of edges}
+
+As the file contains one link per line, the number of links can be determined by counting the number of lines. This does not require a program, but can be done with a little snippet of bash.
+
+\lstinputlisting[language=bash]{edges.sh}
+
+Or, rather, just use the \texttt{wc} utility. The results for this exercise are incorporated in \autoref{tab:counts}.
+
+\subsection{Question 2: Number of nodes}
+
+Like for the previous exercise, a full fledged parser is still not necessary. Instead, we combine the two columns using `awk`, sort them, take unique rows, and finally count lines again. The exact code is shown below, and the results can be found in \autoref{tab:counts}.
+
+\lstinputlisting[language=bash]{nodes.sh}
+
+\begin{table}
+\centering
+\begin{tabular}{l | r | r}
+Filename & {\centering $|E|$} & $|V|$ \\
+\hline
+medium.in & 16631 & 2426 \\
+large.in & 14855842 & 456626 \\
+huge.in & 892263106 &
+\end{tabular}
+
+\caption{Various counts for the network files}
+\label{tab:counts}
+\end{table}
+\end{document}
