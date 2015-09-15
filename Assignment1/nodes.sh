@@ -10,5 +10,5 @@ for file in "$@"
 do
 	echo -n "$file: "
 
-	awk '{print $1;print $2}' "$file" | sort -u | wc -l
+	awk '{print $1;print $2}' "$file" | sort -u --compress-program xz -S 30% | wc -l
 done

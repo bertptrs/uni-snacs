@@ -34,9 +34,11 @@ Or, rather, just use the \texttt{wc} utility. The results for this exercise are 
 
 \subsection{Question 2: Number of nodes}
 
-Like for the previous exercise, a full fledged parser is still not necessary. Instead, we combine the two columns using `awk`, sort them, take unique rows, and finally count lines again. The exact code is shown below, and the results can be found in \autoref{tab:counts}.
+Like for the previous exercise, a full fledged parser is still not necessary. Instead, I combine the two columns using \texttt{awk}, \texttt{sort} them, take unique rows, and finally count lines again. The exact code is shown below, and the results can be found in \autoref{tab:counts}.
 
 \lstinputlisting[language=bash]{nodes.sh}
+
+The parameters for sort are slightly unusual. We do this to improve performance, so that this script can handle the \texttt{huge.in} network. The compress program allows us to use less disk space for temporaries, which is neccessary to prevent disk space issues, and we increase the buffer size to improve overall performance.
 
 \begin{table}
 \centering
@@ -45,7 +47,7 @@ Filename & {\centering $|E|$} & $|V|$ \\
 \hline
 medium.in & 16631 & 2426 \\
 large.in & 14855842 & 456626 \\
-huge.in & 892263106 &
+huge.in & 892263106 & 8113017
 \end{tabular}
 
 \caption{Various counts for the network files}
