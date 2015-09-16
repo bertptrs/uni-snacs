@@ -9,13 +9,9 @@ fi
 for file in "$@"
 do
 	echo -n "$file: "
-	tmpfile=$(mktemp)
-	awk '{if($2 < $1) print $2,$1;else print $1,$2}' "$file" | sort -S 10% --compress-program gzip | gzip > $tmpfile
 
-	edges=$(gzip -cd $tmpfile | wc -l)
-	uniqueEdges=$(gzip -cd $tmpfile | uniq | wc -l)
-
-	rm $tmpfile
+	uniqueEdges=$(awk '{if($2 < $1) print $2,$1;else print $1,$2}' "$file" | sort -u -S 10% --compress-program gzip | wc -l)
+	edges=$(wc -l < "$file")
 
 	if [[ $edges -eq $(expr "$uniqueEdges * 2") ]]; then
 		echo "undirected"
