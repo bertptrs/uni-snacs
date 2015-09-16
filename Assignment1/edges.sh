@@ -1,3 +1,5 @@
 #!/bin/bash
 
-wc -l "$1"
+for file in "$@"; do
+	wc -l "$file"
+done
