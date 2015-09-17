@@ -13,7 +13,7 @@ do
 	uniqueEdges=$(awk '{if($2 < $1) print $2,$1;else print $1,$2}' "$file" | sort -u -S 10% --compress-program gzip | wc -l)
 	edges=$(wc -l < "$file")
 
-	if [[ $edges -eq $(expr "$uniqueEdges * 2") ]]; then
+	if [[ $edges -eq $(($uniqueEdges * 2)) ]]; then
 		echo "undirected"
 	elif [[ $edges -eq $uniqueEdges ]]; then
 		echo "possibly undirected"
