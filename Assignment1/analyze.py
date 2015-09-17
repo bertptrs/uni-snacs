@@ -8,10 +8,10 @@ import sys
 def plot(filename, direction, entries):
     items = entries.items()
     degrees, occurences = zip(*items)
-    
+
     plt.yscale('log')
     plt.xscale('log')
-    plt.xlabel((direction + "degree").capitalize())
+    plt.xlabel("Degree")
     plt.ylabel("Number of occurences")
 
     plt.plot(degrees, occurences, label=direction.capitalize() + "degree for " + os.path.basename(filename))
@@ -20,10 +20,10 @@ def main():
     direction=None
     filename=None
     entries=None
-    
+
     headerPattern = re.compile('Distribution of (in|out)degree for (.*)$')
     entryPattern = re.compile('\s*(\d+)(\s+)(\d+)$')
-    
+
     for line in sys.stdin:
         m = headerPattern.match(line)
         if m:
