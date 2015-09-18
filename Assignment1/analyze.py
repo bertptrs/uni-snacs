@@ -9,7 +9,7 @@ def plot(filename, direction, entries):
     items = entries.items()
     items.sort()
     degrees, occurences = zip(*items)
-    
+
     plt.yscale('log')
     plt.xscale('log')
     plt.xlabel("Degree")
@@ -21,10 +21,10 @@ def main():
     direction=None
     filename=None
     entries=None
-    
+
     headerPattern = re.compile('Distribution of (in|out)degree for (.*)$')
     entryPattern = re.compile('\s*(\d+)(\s+)(\d+)$')
-    
+
     for line in sys.stdin:
         m = headerPattern.match(line)
         if m:
