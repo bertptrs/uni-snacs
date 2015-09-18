@@ -7,11 +7,12 @@ import sys
 
 def plot(filename, direction, entries):
     items = entries.items()
+    items.sort()
     degrees, occurences = zip(*items)
     
     plt.yscale('log')
     plt.xscale('log')
-    plt.xlabel((direction + "degree").capitalize())
+    plt.xlabel("Degree")
     plt.ylabel("Number of occurences")
 
     plt.plot(degrees, occurences, label=direction.capitalize() + "degree for " + os.path.basename(filename))
@@ -47,7 +48,6 @@ def main():
 
     plt.legend()
     plt.savefig("degree-distributions.pdf")
-
 
 if __name__ == "__main__":
     main()
