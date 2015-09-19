@@ -6,7 +6,7 @@ import re
 import sys
 
 def plot(filename, direction, entries):
-    items = entries.items()
+    items = list(entries.items())
     items.sort()
     degrees, occurences = zip(*items)
 
