@@ -1,5 +1,4 @@
 \documentclass[12pt,a4paper,hidelinks]{article}
-\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -7,6 +6,7 @@
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
 \usepackage{parskip}
 \usepackage{hyperref}
+\usepackage{graphicx}
 
 \usepackage{listings}
 \lstset{
@@ -20,11 +20,11 @@
 
 \maketitle
 
-\section{Exercise 1: Neighbourhoods}
+\section*{Exercise 1: Neighbourhoods}
 
-\section{Exercise 3: An Online Social Network}
+\section*{Exercise 3: An Online Social Network}
 
-\subsection{Question 1: Number of edges}
+\subsection*{Question 1: Number of edges}
 
 As the file contains one link per line, the number of links can be determined by counting the number of lines. This does not require a program, but can be done with a little snippet of bash.
 
@@ -32,25 +32,89 @@ As the file contains one link per line, the number of links can be determined by
 
 Or, rather, just use the \texttt{wc} utility. The results for this exercise are incorporated in \autoref{tab:counts}.
 
-\subsection{Question 2: Number of nodes}
+\subsection*{Question 2: Number of nodes}
 
-Like for the previous exercise, a full fledged parser is still not necessary. Instead, I combine the two columns using \texttt{awk}, \texttt{sort} them, take unique rows, and finally count lines again. The exact code is shown below, and the results can be found in \autoref{tab:counts}.
+Like for the previous exercise, a full fledged parser is still not necessary. Instead, I combine the two columns using \texttt{awk}, \texttt{sort} them, take unique rows, and finally count lines again. The exact code is shown in Listing \ref{script:nodes} and the results can be found in \autoref{tab:counts}.
 
-\lstinputlisting[language=bash]{nodes.sh}
+\lstinputlisting[
+	language=bash,
+	caption=Node counter script.,
+	label=script:nodes,
+	float
+]{nodes.sh}
 
 The parameters for sort are slightly unusual. We do this to improve performance, so that this script can handle the \texttt{huge.in} network. The compress program allows us to use less disk space for temporaries, which is neccessary to prevent disk space issues, and we increase the buffer size to improve overall performance.
 
 \begin{table}
 \centering
-\begin{tabular}{l | r | r}
-Filename & {\centering $|E|$} & $|V|$ \\
+\begin{tabular}{l | r | r | l}
+Filename & {\centering $|E|$} & $|V|$ & Directed \\
 \hline
-medium.in & 16631 & 2426 \\
-large.in & 14855842 & 456626 \\
-huge.in & 892263106 & 8113017
+medium.in & 16631 & 2426 & Possibly \\
+large.in & 14855842 & 456626 & Yes \\
+huge.in & 892263106 & 8113017 & Yes
 \end{tabular}
-
 \caption{Various counts for the network files}
 \label{tab:counts}
 \end{table}
+
+\subsection*{Question 3: degree distribution}
+
+To compute the in or out degree for a node, we can simply count the number of times that a number occurs in the source or destination column. The code for this is shown in Listing \ref{script:degrees}.
+
+\lstinputlisting[
+	language=bash,
+	caption=Script for computing the degree for all nodes.,
+	label=script:degrees,
+	float
+]{degree.sh}
+
+After we have computed the degree for various nodes, we can use this output to make a visualisation.
+
+\lstinputlisting[
+	language=python,
+	caption=Degree visualizer.,
+	label=script:analyze
+]{analyze.py}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.83]{degree-distributions}
+	\caption{The degree distributions for all input files.}
+	\label{fig:degrees}
+\end{figure}
+
+\subsection*{Question 4: directedness}
+
+To answer this question, we must agree upon the interpretation of the file. There are some cases which can lead us to an interpretation. The following statements determine this.
+
+\begin{align}
+\label{eq:somereflex} \exists u, v &: (u, v) \in E \land (v, u) \in E \\
+\label{eq:allreflex} \forall u, v &: (u, v) \in E \implies (v, u) \in E \\
+\label{eq:noreflex}\nexists u, v &: (u, v) \in E \land (v, u) \in E
+\end{align}
+
+If \ref{eq:allreflex} holds, we are clearly in an undirected graph, because every edge is reflexive.
+
+If \ref{eq:somereflex} and holds and \ref{eq:allreflex} does not, we are clearly in a directed graph because there are some reflexive connections, but not all of them are.
+
+If, however, \ref{eq:noreflex} holds, there are no reflexive edges. This means that we can interpret the graph as either undirected or directed, because we can interpret each edge as also going back.
+
+Once again, we implement this in bash, as it is very simple. We use \texttt{awk} to put any edge listing $(u, v)$ in the file in asceding order, so that when we sort the file, edges and returning edges are next to each other. This allows us to remove duplicates, and then analyze the number of lines that remain. We can differentiate these counts in two categories.
+
+\begin{align*}
+2 \times & |E_{unique}| = |E| & \implies & \text{Network is undirected.} \\
+|E| < 2 \times & |E_{unique}| < 2 \times |E| & \implies & \text{Network is directed} \\
+& |E_{unique}| = |E| & \implies & \text{Network is possibly directed}
+\end{align*}
+
+The bash script in Listing \ref{script:directed} computes $|E|$ and $|E_{unique}|$ and prints out the category the network falls in.
+
+\lstinputlisting[
+	language=bash,
+	caption=Code that computes whether or not a graph is directed,
+	label=script:directed,
+	float
+]{directed.sh}
+
 \end{document}
