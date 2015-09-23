@@ -60,7 +60,6 @@ int Network::nNodes() const
 
 int Network::largestComponentSize() const
 {
-	
 	vector<int> colors = getColors();
 	sort(colors.begin(), colors.end());
 
@@ -89,7 +88,7 @@ vector<int> Network::getColors() const
 	vector<int> colors(maxNode + 1, 0);
 
 	queue<int> todo;
-	for (int i = 1; i < maxNode; i++) {
+	for (int i = 1; i <= maxNode; i++) {
 		if (colors[i] != 0) {
 			continue; // Already colored this one.
 		}
@@ -100,8 +99,9 @@ vector<int> Network::getColors() const
 			todo.pop();
 			if (colors[node] != i) {
 				if (colors[node] != 0) {
+					const int oldColor = colors[node];
 					// Recolor all nodes with his color to the new one.
-					replace(colors.begin(), colors.end(), colors[node], i);
+					replace(colors.begin(), colors.end(), oldColor, i);
 				} else {
 					// Queue all related nodes to add to this one.
 					colors[node] = i;
@@ -124,12 +124,8 @@ int main(int argc, char** argv)
 	for (int i = 1; i < argc; i++)
 	{
 		ifstream input(argv[i]);
-		cout << basename(argv[i]) << ": " << endl;
-
 		Network network;
 		network.read(input);
-		cout << "\tEdges: " << network.nEdges() << endl;
-		cout << "\tNodes: " << network.nNodes() << endl;
-		cout << "\tLargest component: " << network.largestComponentSize() << endl;
+		cout << basename(argv[i]) << ": " << network.largestComponentSize() << endl;
 	}
 }
