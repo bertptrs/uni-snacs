@@ -67,9 +67,6 @@ int Network::largestComponentSize() const
 	// Now determine the longest streak
 	int maxConnected = 0;
 	for (int i = 0; i < maxNode; i++) {
-		if (i % 10000 == 0) {
-			cerr << i << endl;
-		}
 		int connected = 1;
 		const int color = colors[i];
 		if (color == 0) {
