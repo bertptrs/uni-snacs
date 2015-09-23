@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <utility>
 #include <libgen.h>
-#include <set>
 #include <queue>
 
 using namespace std;
@@ -14,9 +13,6 @@ typedef pair<int, int> edge_t;
 class Network {
 	public:
 		void read(istream& input);
-		int degree(int node) const;
-		int nEdges() const;
-		int nNodes() const;
 		int largestComponentSize() const;
 		
 	private:
@@ -41,23 +37,6 @@ void Network::read(istream& input)
 	sort(edges.begin(), edges.end());
 }
 
-int Network::nEdges() const
-{
-	return edges.size();
-}
-
-int Network::nNodes() const
-{
-	set<int> nodes;
-	for (auto& edge : edges)
-	{
-		nodes.insert(edge.first);
-		nodes.insert(edge.second);
-	}
-
-	return nodes.size();
-}
-
 int Network::largestComponentSize() const
 {
 	const vector<int> colors = getColors();
@@ -78,7 +57,7 @@ vector<int> Network::getColors() const
 
 	vector<int> colors(maxNode + 1, 0);
 
-	queue<int> todo;
+	queue<int> todo; // Allocated outside the loop to prevent excess allocations.
 	for (int i = 1; i <= maxNode; i++) {
 		if (colors[i] != 0) {
 			continue; // Already colored this one.
