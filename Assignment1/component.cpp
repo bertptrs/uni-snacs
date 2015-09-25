@@ -60,23 +60,14 @@ int Network::nNodes() const
 
 int Network::largestComponentSize() const
 {
-	vector<int> colors = getColors();
-	sort(colors.begin(), colors.end());
+	const vector<int> colors = getColors();
+	vector<int> counts(colors.size(), 0);
 
-	// Now determine the longest streak
-	int maxConnected = 0;
-	for (int i = 0; i < maxNode; i++) {
-		int connected = 1;
-		const int color = colors[i];
-		if (color == 0) {
-			continue;
-		}
-		for (i = i + 1; i < maxNode && colors[i] == color; i++, connected++);
-
-		maxConnected = max(maxConnected, connected);
+	for (const int& color : colors) {
+		counts[color]++;
 	}
 
-	return maxConnected;
+	return *max_element(counts.begin(), counts.end());
 }
 
 vector<int> Network::getColors() const
@@ -97,19 +88,18 @@ vector<int> Network::getColors() const
 		while (!todo.empty()) {
 			int node = todo.front();
 			todo.pop();
-			if (colors[node] != i) {
-				if (colors[node] != 0) {
-					const int oldColor = colors[node];
-					// Recolor all nodes with his color to the new one.
-					replace(colors.begin(), colors.end(), oldColor, i);
-				} else {
-					// Queue all related nodes to add to this one.
-					colors[node] = i;
-					auto it = lower_bound(edges.begin(), edges.end(), make_pair(node, 0));
-					for (; it != edges.end() && it->first == node; it++) {
-						if (colors[it->second] != i) {
-							todo.push(it->second);
-						}
+			if (colors[node] == 0) {
+				// Recolor all nodes with his color to the new one.
+				// Queue all related nodes to add to this one.
+				colors[node] = i;
+				auto it = lower_bound(edges.begin(), edges.end(), make_pair(node, 0));
+				for (; it != edges.end() && it->first == node; it++) {
+					const int color = colors[it->second];
+					if (color == 0) {
+						todo.push(it->second);
+					} else if (color != i) {
+						// Do it immediately, so we don't have multiple recolors in the queue.
+						replace(colors.begin(), colors.end(), color, i);
 					}
 				}
 			}
