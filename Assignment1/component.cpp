@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <utility>
 #include <libgen.h>
-#include <queue>
+#include <set>
 #include <iterator>
 
 using namespace std;
@@ -64,16 +64,15 @@ vector<int> Network::getColors() const
 
 	vector<int> colors(maxNode + 1, 0);
 
-	queue<int> todo; // Allocated outside the loop to prevent excess allocations.
 	for (int i = 1; i <= maxNode; i++) {
 		if (colors[i] != 0) {
 			continue; // Already colored this one.
 		}
 
-		todo.push(i);
+		set<int> todo = {i}; // Queue implemented as a set to reduce memory footprint.
 		while (!todo.empty()) {
-			int node = todo.front();
-			todo.pop();
+			int node = *todo.begin();
+			todo.erase(todo.begin());
 			if (colors[node] == 0) {
 				// Recolor all nodes with his color to the new one.
 				// Queue all related nodes to add to this one.
@@ -82,7 +81,7 @@ vector<int> Network::getColors() const
 				for (; it != edges.end() && it->first == node; it++) {
 					const int color = colors[it->second];
 					if (color == 0) {
-						todo.push(it->second);
+						todo.insert(it->second);
 					} else if (color != i) {
 						// Do it immediately, so we don't have multiple recolors in the queue.
 						replace(colors.begin(), colors.end(), color, i);
