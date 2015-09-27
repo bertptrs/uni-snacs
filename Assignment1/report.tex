@@ -76,11 +76,7 @@ To compute the in or out degree for a node, we can simply count the number of ti
 
 After we have computed the degree for various nodes, we can use this output to make a visualisation.
 
-\lstinputlisting[
-	language=python,
-	caption=Degree visualizer.,
-	label=script:analyze
-]{analyze.py}
+
 
 \begin{figure}
 	\centering
@@ -170,11 +166,30 @@ So, to summarize, our theorethical complexity is $O(|V|(\log |E| + |V|))$.\footn
 
 \appendix
 
+\section{Source listing for analyze.py}
+
+\label{appendix:analyze}
+
+Below is the source code for \texttt{analyze.py}. The code runs with Python 2.7 and requires matplotlib.
+
+\lstinputlisting[
+	language=python
+]{analyze.py}
+
 \section{Source listing for component.cpp}
+
 \label{appendix:components}
 
-Below is the source for \texttt{component.cpp}. The program was compiled using \texttt{g++ -std=c++11 -O2}.
+Below is the source for \texttt{component.cpp}. The program was compiled using the makefile in \autoref{appendix:makefile}.
 
 \lstinputlisting[language=c++]{component.cpp}
+
+\section{Makefile}
+
+\label{appendix:makefile}
+
+\lstinputlisting[
+	language={[gnu]make}
+]{Makefile}
 
 \end{document}
