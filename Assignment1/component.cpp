@@ -5,6 +5,7 @@
 #include <utility>
 #include <libgen.h>
 #include <queue>
+#include <iterator>
 
 using namespace std;
 
@@ -39,14 +40,20 @@ void Network::read(istream& input)
 
 int Network::largestComponentSize() const
 {
-	const vector<int> colors = getColors();
-	vector<int> counts(colors.size(), 0);
+	vector<int> colors = getColors();
+	sort(colors.begin(), colors.end());
 
-	for (const int& color : colors) {
-		counts[color]++;
+	int maxComponent = 0;
+	auto streakStart = upper_bound(colors.begin(), colors.end(), 0);
+	while (streakStart != colors.end()) {
+		auto streakEnd = upper_bound(streakStart, colors.end(), *streakStart);
+		int componentSize = distance(streakStart, streakEnd);
+		maxComponent = max(maxComponent, componentSize);
+
+		streakStart = streakEnd;
 	}
 
-	return *max_element(counts.begin(), counts.end());
+	return maxComponent;
 }
 
 vector<int> Network::getColors() const
