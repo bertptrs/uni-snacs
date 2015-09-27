@@ -8,12 +8,17 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 
+\usepackage{algorithm,algpseudocode}
+
 \usepackage{listings}
 \lstset{
 	breaklines=true,
 	tabsize=4,
 	numbers=left
 }
+
+\def\algorithmautorefname{Algorithm}
+
 \author{Bert Peters --- s1147919}
 \title{Social Network Analysis for Computer Scientists --- Assignment 1}
 \begin{document}
@@ -47,12 +52,12 @@ The parameters for sort are slightly unusual. We do this to improve performance,
 
 \begin{table}
 \centering
-\begin{tabular}{l | r | r | l}
-Filename & {\centering $|E|$} & $|V|$ & Directed \\
+\begin{tabular}{l | r | r | l | r}
+Filename & {\centering $|E|$} & $-|V|$ & Directed & Largest component\\
 \hline
-medium.in & 16631 & 2426 & Possibly \\
-large.in & 14855842 & 456626 & Yes \\
-huge.in & 892263106 & 8113017 & Yes
+medium.in & 16631 & 2426 & Possibly & 1998 \\
+large.in & 14855842 & 456626 & Yes & 456288 \\
+huge.in & 892263106 & 8113017 & Yes & 8083963
 \end{tabular}
 \caption{Various counts for the network files}
 \label{tab:counts}
@@ -116,5 +121,60 @@ The bash script in Listing \ref{script:directed} computes $|E|$ and $|E_{unique}
 	label=script:directed,
 	float
 ]{directed.sh}
+
+\subsection*{Question 3.5: Largest connected component}
+
+For this section, we consider the largest connected component to be the largest weakly connected component. This helps us, because this removes the distinction between directed and undirected networks.
+
+To compute the largest connected component, I could not come up with a \texttt{bash}-based solution, so I reverted to using \texttt{C++}.
+
+The algorithm works as follows. First, we store our edges into a large edge array and sort them on $u, v$. After that, we attempt to make a coloring for each node. In this coloring, connected nodes are the same color. Finally, we determine the number of occurences for the most frequent color. This is our answer. The code for this algorithm can be found in \autoref{appendix:components}.
+
+\subsubsection*{Coloring algorithm}
+
+The coloring algorithm is more or less a breadth first search, as described in \autoref{algo:coloring}. We know that the complexity of a breadth first search is $O(|E|)$,\footnote{Technically, this is $|V|)$, but because we consider sparse networks, $|E| \approx |V|$ so we ignore $|E|$. This simplifies our formulae.} without accounting for the complexity of determining neighbours for nodes. Because we sorted our list of edges, we can access the neighbours of $u$ using binary search in $O(B + \log |E|)$, with $B$ the number of neighbours.
+
+In the inner loop of our algorithm, the most complex task we potentially do, is recoloring all the nodes. The way we do this is enumerating all nodes and replacing the colors we have to. This is an $O(|V|)$ operation. This happens each time we find a new directed route into an existing component. However, this rarely happens. Most of the time, we find a connected component once, because the networks are very reflexive.
+
+So, to summarize, our theorethical complexity is $O(|V|(\log |E| + |V|))$.\footnote{We ignore the $B$ in the complexity for accessing neighbours, because the rest of the loop gets executed just as often. Therefore, it is already part of the BFS complexity.} This works out to $O(|V|^2 + |V|\log|E|) \approx O(|V|^2)$. This complexity however includes the recoloring cost, so while it is the worst case, the average case is better, and runs in $O(|V| \log |E|)$.
+
+\begin{algorithm}
+\caption{Node coloring algorithm}
+\label{algo:coloring}
+\begin{algorithmic}
+
+\ForAll{$u \in V$}
+	\State initialize $color_u$ as 0
+\EndFor
+\\
+\ForAll{$u \in V$}
+	\If{$color_u = 0$}
+		\State $todo \gets \{u\}$
+		\While{$todo \neq \emptyset$}
+			\State Pick a $v$ from $todo$
+			\State $todo \gets todo \setminus \{v\}$
+			\If{$color_v \neq u$}
+				\If{$color_v = 0$}
+					\State $color_v \gets u$
+					\State Add all $w : w \in N_1(v) \land  color_w \neq u$ to $todo$.
+				\Else
+					\State Recolor all $w : color_w = color_v$ to $u$.
+				\EndIf
+			\EndIf
+		\EndWhile
+	\EndIf
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}
+
+\appendix
+
+\section{Source listing for component.cpp}
+\label{appendix:components}
+
+Below is the source for \texttt{component.cpp}. The program was compiled using \texttt{g++ -std=c++11 -O2}.
+
+\lstinputlisting[language=c++]{component.cpp}
 
 \end{document}
