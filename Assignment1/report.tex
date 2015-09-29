@@ -25,11 +25,59 @@
 
 \maketitle
 
-\section*{Exercise 1: Neighbourhoods}
+\section{Neighbourhoods}
 
-\section*{Exercise 3: An Online Social Network}
+\begin{enumerate}
+	\item This is true only for a complete graph, because for this to happen every node should be connected to every other node.
+	
+	\item This computes the centrality, with a lower number meaning a more central node.
+	
+	\item To define the reverse $k$ neighbourhood, we first define the reverse neighbourhood as follows:
+	$$
+		N'(W) = \{ w \in V : v \in W \land (v, w) \in E \}
+	$$
+	
+	Then, after defining that, we modify that to use a $k$ reversed neighbourhood an define the following:
+	\begin{align*}
+		N_0'(W) & = W \\
+		N_k'(W) & = N'(N_{k - 1}'(W) \cup N_{k - 1}'(W)
+	\end{align*}
+	
+	\item Two nodes $v$ and $w$ are part of the same strongly connected component iff
+	$$
+		N_k(\{v\}) \cap N'_k(\{v\}) = N_k(\{w\}) \cap N'_k(\{w\})
+	$$
+	
+	for some $k \geq 0$.
+	
+	\item The algorithm shown in \autoref{algo:components} shows how this could be done using the $N_k(W)$ method. After the algorithm is done, $n$ contains the number of components.
+\end{enumerate}
 
-\subsection*{Question 1: Number of edges}
+\begin{algorithm}
+\caption{Computing the number of connected components in an undirected network.}
+\label{algo:components}
+
+\begin{algorithmic}
+	\State $n \gets 0$
+	\While{$V \neq \emptyset$}
+		\State Pick a random $v \in V$
+		\State $p \gets 0$
+		\While{$|N_{p + 1}(\{v\})| > |N_p(\{v\})|$}
+			\State $p \gets p + 1$
+		\EndWhile
+		
+		\State $n \gets n + 1$
+		\State $V \gets V \setminus N_p(\{v\})$
+	\EndWhile
+\end{algorithmic}
+
+\end{algorithm}
+
+\section{Diameter computation}
+
+\section{An Online Social Network}
+
+\subsection{Number of edges}
 
 As the file contains one link per line, the number of links can be determined by counting the number of lines. This does not require a program, but can be done with a little snippet of bash.
 
@@ -37,7 +85,7 @@ As the file contains one link per line, the number of links can be determined by
 
 Or, rather, just use the \texttt{wc} utility. The results for this exercise are incorporated in \autoref{tab:counts}.
 
-\subsection*{Question 2: Number of nodes}
+\subsection{Number of nodes}
 
 Like for the previous exercise, a full fledged parser is still not necessary. Instead, I combine the two columns using \texttt{awk}, \texttt{sort} them, take unique rows, and finally count lines again. The exact code is shown in Listing \ref{script:nodes} and the results can be found in \autoref{tab:counts}.
 
