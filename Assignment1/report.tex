@@ -75,6 +75,75 @@
 
 \section{Diameter computation}
 
+I execute the BoundingDiameters\footnote{F.W. Takes and W.A. Kosters, Determining the Diameter of Small World Networks, in \textit{Proceedings of the 20th ACM International Conference on Information
+and Knowledge Management} (CIKM), pp. 1191-1196, 2011} on the graph provided on paper. As this is rather complex to shown in \LaTeX, I illustrate the actions I perform in text.
+
+\begin{enumerate}
+	\item We start with selecting an initial node with the lowest lower bound. As there are no known bounds, we select the node with the highest degree. This is node $F$, as it has degree 6. The longest shortest path is from $F \rightarrow T$, of length 5. This produces the bounds as shown in \autoref{tab:it1}.
+	
+		\begin{table}
+			\centering
+			\begin{tabular}{l | r | r}
+				Node & $\varepsilon_L$ & $\varepsilon_U$ \\
+				\hline
+				$A$ & 5 & 7 \\
+				$B$ & 5 & 7 \\
+				$C$ & 5 & 6 \\
+				$D$ & 5 & 6 \\
+				$E$ & 5 & 6 \\
+				$F$ & 5 & 5 \\
+				$G$ & 5 & 7 \\
+				$H$ & 5 & 6 \\
+				$I$ & 5 & 8 \\
+				$J$ & 5 & 6 \\
+				$K$ & 5 & 7 \\
+				$L$ & 5 & 6 \\
+				$M$ & 5 & 7 \\
+				$N$ & 5 & 7 \\
+				$P$ & 5 & 7 \\
+				$Q$ & 5 & 8 \\
+				$R$ & 5 & 8 \\
+				$S$ & 5 & 9 \\
+				$T$ & 5 & 10 \\
+			\end{tabular}
+			\caption{Eccentricity bounds after 1 iteration of the algorithm.}
+			\label{tab:it1}
+		\end{table}
+	
+	\item After this, we already have some interesting bounds.  Because we technically did select the lowest lower bound, we select the highest upper bound this time. This is node $T$, with an upper bound of 10. The longest path is $T \rightarrow I$, of length 8. After recomputing the bounds, we arrive at the bounds as shown in \autoref{tab:it2}.
+	
+		\begin{table}
+			\centering
+			\begin{tabular}{l | r | r}
+				Node & $\varepsilon_L$ & $\varepsilon_U$ \\
+				\hline
+				$A$ & 7 & 7 \\
+				$B$ & 7 & 7 \\
+				$C$ & 6 & 6 \\
+				$D$ & 6 & 6 \\
+				$E$ & 6 & 6 \\
+				$F$ & 5 & 5 \\
+				$G$ & 7 & 7 \\
+				$H$ & 6 & 6 \\
+				$I$ & 8 & 8 \\
+				$J$ & 6 & 6 \\
+				$K$ & 7 & 7 \\
+				$L$ & 5 & 6 \\
+				$M$ & 5 & 7 \\
+				$N$ & 5 & 7 \\
+				$P$ & 5 & 7 \\
+				$Q$ & 5 & 8 \\
+				$R$ & 5 & 8 \\
+				$S$ & 7 & 9 \\
+				$T$ & 8 & 8 \\
+			\end{tabular}
+			\caption{Eccentricity bounds after 2 iteration of the algorithm.}
+			\label{tab:it2}
+		\end{table}
+	
+	\item Now, most bounds are already tight, and there is one single node that can still contribute to the diameter, node $S$, because it is the only node with an upper bound larger than 8. Intuitively, you can see that it will not, because all paths from $T$ go through $S$, but we are technically not done yet. Computing the actual eccentricity, we know it actually is 7, and that the diameter of the network is 8.
+\end{enumerate}
+
 \section{An Online Social Network}
 
 \subsection{Number of edges}
@@ -214,11 +283,15 @@ So, to summarize, our theorethical complexity is $O(|V|(\log |E| + |V|))$.\footn
 
 \subsection{Visualization}
 
-To visualize \texttt{medium.in}, I used Gephi. I chose to interpret the network as an undirected network and to visualise only the largest connected component. That component contains over 80\% of the nodes in the network, and the remaining components are very small.\footnote{Most of the components are less than 10 nodes in size.} 
+To visualize \texttt{medium.in}, I used Gephi. I chose to interpret the network as an undirected network and to visualise only the largest connected component. That component contains over 80\% of the nodes in the network, and the remaining components are very small.\footnote{Most of the components are less than 10 nodes in size.}
+
+Coloring of nodes is done using community detection, and sizing was done by degree. The nodes were grouped using the YifanHu Multilevel algorithm, with the default parameters, and manually making it slightly more compact. I decided not to show the links, as it is mostly a clustered mess. The groupings are visible this way, and it looks nicer.
+
+Shown in \autoref{fig:visualisation} is the final visualisation. To me, it looks something like Australia, except with way too many people in the Outback.
 
 \begin{figure}
 	\centering
-	\includegraphics[scale=0.5]{visualisation}
+	\includegraphics[scale=0.55]{visualisation}
 	\caption{\texttt{medium.in} visualized}
 	\label{fig:visualisation}
 \end{figure}
@@ -228,6 +301,10 @@ To visualize \texttt{medium.in}, I used Gephi. I chose to interpret the network 
 Analyzing the \texttt{huge.in} network required some memory management, to store all nodes in memory. Fortunately, the Linux shell tools \texttt{awk}, \texttt{wc}, \texttt{sort}, \texttt{gzip}, and \texttt{uniq} all require very little memory, so those programs worked just as well for the \texttt{huge.in} network as it did for the others.
 
 Moreover, the most expensive operation being done in each of the bash script files, is sorting, which requires at most $O(|E| \log |E|)$ time and $O(|E|)$ disk storage. The disk storage requirement is then reduced using \texttt{gzip}, so the actual storage requirement is significantly less.\footnote{\texttt{sort} stores sorted chunks on disk. Sorted lists of numbers happen to contain a lot of repeating strings, so in some cases, \texttt{gzip} was able to reduce the files by up to 99\%.}
+
+The only computationally heavy exercise left is computing the largest weakly connected component. The program uses two \texttt{int}s per edge, or 8 bytes. This means 6.6 GiB for the edges alone. Furthermore, a bit of memory is allocated to store what component a node is in, but that is neglegible. My initial program used a \texttt{std::queue} for the bread first search queue. Peaking at 3.5 GiB of storage (of \texttt{int}s representing nodes), this turned out to a bit much. Instead, I used \texttt{std::set} as a todo list, forcing only a single entry per node. This has some downsides, mostly being performance and using more memory per entry. It did actually help to brng the todo-list down to 1.5 GiB of memory, allowing the program to run on a machine with at least 8.1 GiB of memory, while only doubling the execution time.
+
+The memory footprint can still be significantly improved. The memory usage for the edges can be slimmed down to $4 \times |E| + 8 \times |V|$ by using using two arrays. One storing the destinations for edges, and one storing for each node the number of edges it has, and its starting point in the first array. Even this can be slightly slimmed down to $4 \times |E| + 4 \times |V|$ by not storing the starting point, but instead inferring it from the number of nodes already passed.\footnote{Credits to Koen \textellipsis for suggesting I do this.} I did not implement such a strategy, as it complicates reading the files, requiring either pre-sorting the input or lots of relocations while reading.
 
 \appendix
 
