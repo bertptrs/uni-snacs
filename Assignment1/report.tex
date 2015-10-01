@@ -111,7 +111,7 @@ huge.in & 892263106 & 8113017 & Yes & 8083964
 \label{tab:counts}
 \end{table}
 
-\subsection*{Question 3: degree distribution}
+\subsection{Degree distribution}
 
 To compute the in or out degree for a node, we can simply count the number of times that a number occurs in the source or destination column. The code for this is shown in Listing \ref{script:degrees}.
 
@@ -133,7 +133,7 @@ After we have computed the degree for various nodes, we can use this output to m
 	\label{fig:degrees}
 \end{figure}
 
-\subsection*{Question 4: directedness}
+\subsection{Directedness}
 
 To answer this question, we must agree upon the interpretation of the file. There are some cases which can lead us to an interpretation. The following statements determine this.
 
@@ -166,7 +166,7 @@ The bash script in Listing \ref{script:directed} computes $|E|$ and $|E_{unique}
 	float
 ]{directed.sh}
 
-\subsection*{Question 3.5: Largest connected component}
+\subsection{Largest connected component}
 
 For this section, we consider the largest connected component to be the largest weakly connected component. This helps us, because this removes the distinction between directed and undirected networks.
 
@@ -211,6 +211,23 @@ So, to summarize, our theorethical complexity is $O(|V|(\log |E| + |V|))$.\footn
 
 \end{algorithmic}
 \end{algorithm}
+
+\subsection{Visualization}
+
+To visualize \texttt{medium.in}, I used Gephi. I chose to interpret the network as an undirected network and to visualise only the largest connected component. That component contains over 80\% of the nodes in the network, and the remaining components are very small.\footnote{Most of the components are less than 10 nodes in size.} 
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.5]{visualisation}
+	\caption{\texttt{medium.in} visualized}
+	\label{fig:visualisation}
+\end{figure}
+
+\subsection{Analyzing \texttt{huge.in}}
+
+Analyzing the \texttt{huge.in} network required some memory management, to store all nodes in memory. Fortunately, the Linux shell tools \texttt{awk}, \texttt{wc}, \texttt{sort}, \texttt{gzip}, and \texttt{uniq} all require very little memory, so those programs worked just as well for the \texttt{huge.in} network as it did for the others.
+
+Moreover, the most expensive operation being done in each of the bash script files, is sorting, which requires at most $O(|E| \log |E|)$ time and $O(|E|)$ disk storage. The disk storage requirement is then reduced using \texttt{gzip}, so the actual storage requirement is significantly less.\footnote{\texttt{sort} stores sorted chunks on disk. Sorted lists of numbers happen to contain a lot of repeating strings, so in some cases, \texttt{gzip} was able to reduce the files by up to 99\%.}
 
 \appendix
 
