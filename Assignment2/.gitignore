@@ -1,0 +1,8 @@
+*.aux
+*.log
+*.out
+*.pdf
+*.log
+*.synctex.gz
+*.o
+parser
