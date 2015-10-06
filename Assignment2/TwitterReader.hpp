@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <queue> 
-#include <locale>
+#include "utility.hpp"
 
 using namespace std;
 
@@ -14,10 +14,10 @@ struct Mention {
 	string timestamp;
 	int amount;
 
-	Mention(string from = "", string to = "", string timestamp = "", int amount = 1) :
-		from(from),
-		to(to),
-		timestamp(timestamp),
+	Mention(const wstring& from, const wstring& to, const wstring& timestamp, int amount = 1) :
+		from(unwiden(from)),
+		to(unwiden(to)),
+		timestamp(unwiden(timestamp)),
 		amount(amount)
 	{
 	}
@@ -28,7 +28,7 @@ class TwitterReader {
 	public:
 		TwitterReader();
 
-		bool read(istream& input);
+		bool read(wistream& input);
 		bool hasMention() const;
 		Mention getMention();
 
@@ -37,8 +37,8 @@ class TwitterReader {
 
 		queue<Mention> readMentions;
 
-		bool isUsername(const string& word) const;
-		string getUsername(const string& word) const;
+		wstring readUsername(wstringstream& input) const;
+		inline static constexpr bool isUsernameCharacter(wchar_t c);
 };
 
 #endif
