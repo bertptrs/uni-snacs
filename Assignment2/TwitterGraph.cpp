@@ -5,6 +5,7 @@
 #include <algorithm>
 
 TwitterGraph::TwitterGraph(const string& filename) :
+	entries({{}}),
 	maxUserCode(0)
 {
 	wifstream file(filename);
@@ -37,9 +38,7 @@ int TwitterGraph::getOrCreateCode(const string& username)
 		maxUserCode = maxUserCode + 1;
 		userToCodeMap[username] = maxUserCode;
 		codeToUserMap[maxUserCode] = username;
-		if (maxUserCode >= entries.size()) {
-			entries.resize(2 * entries.size());
-		}
+		entries.emplace_back();
 		return maxUserCode;
 	}
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "TwitterReader.hpp"
+#include "TwitterGraph.hpp"
 #include <fstream>
 #include <locale>
 
@@ -9,9 +10,7 @@ int main(int argc, char** argv)
 {
 	TwitterReader twitter;
 	for (int i = 1; i < argc; i++) {
-		wifstream file(argv[i]);
-		while (twitter.read(file)) {
-		}
+		TwitterGraph g(argv[i]);
 	}
 	return 0;
 }
