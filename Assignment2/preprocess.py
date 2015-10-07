@@ -19,6 +19,8 @@ userCode.mapping = {}
 def main():
     usernamePattern = re.compile('@([a-zA-Z0-9_]+)')
 
+    print("Source\tTarget\tTimestamp")
+
     for line in fileinput.input():
         parts = line.split("\t", 2)
         timestamp = parts[0]
@@ -27,8 +29,9 @@ def main():
         for mention in usernamePattern.findall(parts[2]):
             print(str(user) + "\t" + str(userCode(mention.lower())) +  "\t" + timestamp)
 
+    print("Id\tLabel", file=sys.stderr)
     for username,code in userCode.mapping.items():
-        print(code, username, file=sys.stderr)
+        print(str(code) + "\t" + username, file=sys.stderr)
 
 if __name__ == "__main__":
     main()
