@@ -12,6 +12,7 @@ struct Node {
 	int numEdges;
 	int edgeOffset;
 	int componentID;
+	int inDegree;
 
 	Node();
 };
@@ -19,6 +20,8 @@ struct Node {
 class TwitterGraph
 {
 	public:
+		static constexpr int NO_COMPONENT = -1;
+
 		TwitterGraph(istream& edges);
 		TwitterGraph(const TwitterGraph&) = default;
 		TwitterGraph(TwitterGraph&&) = default;
@@ -26,14 +29,20 @@ class TwitterGraph
 		int numEdges() const;
 		int numNodes() const;
 
-		void componentize();
+		int weakComponents();
+
+		int inDegree(int node) const;
+		int outDegree(int node) const;
 
 	private:
-		vector<int> edges; // Destination and timestamp.
+		vector<pair<int, int>> edges; // Destination and timestamp.
 		vector<Node> nodes; // Offset and number of edges 
 		int giantComponentID;
 
 		void recolor(int original, int to);
+
+		template<class CallbackType>
+			void bfs(const int startNode, CallbackType callback);
 };
 
 #endif
