@@ -9,6 +9,7 @@ def userCode(name):
     if name not in userCode.mapping:
         userCode.maxCode = userCode.maxCode + 1
         userCode.mapping[name] = userCode.maxCode
+        print(str(userCode.maxCode) + "\t" + name, file=sys.stderr)
 
     return userCode.mapping[name]
 
@@ -17,21 +18,20 @@ userCode.mapping = {}
 
 
 def main():
-    usernamePattern = re.compile('@([a-zA-Z0-9_]+)')
+    usernamePattern = re.compile('\W@([a-zA-Z0-9_]+)')
 
     print("Source\tTarget\tTimestamp")
+    print("Id\tLabel", file=sys.stderr)
 
     for line in fileinput.input():
         parts = line.split("\t", 2)
         timestamp = parts[0]
-        user = userCode(parts[1].lower())
+        user = parts[1].lower()
 
         for mention in usernamePattern.findall(parts[2]):
-            print(str(user) + "\t" + str(userCode(mention.lower())) +  "\t" + timestamp)
-
-    print("Id\tLabel", file=sys.stderr)
-    for username,code in userCode.mapping.items():
-        print(str(code) + "\t" + username, file=sys.stderr)
+            if len(mention) > 15:
+                continue
+            print(str(userCode(user)) + "\t" + str(userCode(mention.lower())) +  "\t" + timestamp)
 
 if __name__ == "__main__":
     main()
