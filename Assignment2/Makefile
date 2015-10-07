@@ -1,6 +1,12 @@
 CXX=g++
 CXXFLAGS=-Wall -Wextra -pedantic -O3 -std=c++11
 
+.PHONY: all clean
+
 all: parser
 
-parser: parser.cpp TwitterReader.o TwitterGraph.o
+clean:
+	$(RM) parser
+	$(RM) *.o
+
+parser: parser.cpp TwitterGraph.o

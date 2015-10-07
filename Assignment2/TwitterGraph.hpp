@@ -2,33 +2,38 @@
 #define TWITTER_GRAPH_H
 
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
+#include <iostream>
 
 using namespace std;
+
+struct Node {
+	int numEdges;
+	int edgeOffset;
+	int componentID;
+
+	Node();
+};
 
 class TwitterGraph
 {
 	public:
-		TwitterGraph(const string& filename);
+		TwitterGraph(istream& edges);
 		TwitterGraph(const TwitterGraph&) = default;
 		TwitterGraph(TwitterGraph&&) = default;
 
+		int numEdges() const;
+		int numNodes() const;
+
+		void componentize();
+
 	private:
-		struct Entry {
-			int to;
-			int count;
-			string timestamp;
-			bool operator < (const Entry&) const;
-		};
+		vector<int> edges; // Destination and timestamp.
+		vector<Node> nodes; // Offset and number of edges 
+		int giantComponentID;
 
-		unordered_map<string, int> userToCodeMap;
-		unordered_map<int, string> codeToUserMap;
-		vector<vector<Entry>> entries;
-		unsigned int maxUserCode;
-
-		int getOrCreateCode(const string& username);
+		void recolor(int original, int to);
 };
 
 #endif

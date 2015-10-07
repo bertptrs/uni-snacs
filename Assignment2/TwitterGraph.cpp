@@ -1,49 +1,45 @@
-#include <fstream>
 #include "TwitterGraph.hpp"
-#include "TwitterReader.hpp"
-#include <map>
 #include <algorithm>
+#include <cassert>
 
-TwitterGraph::TwitterGraph(const string& filename) :
-	entries({{}}),
-	maxUserCode(0)
+Node::Node():
+	numEdges(0),
+	edgeOffset(0),
+	componentID(-1)
 {
-	wifstream file(filename);
-	TwitterReader reader;
+}
 
-	while (reader.read(file)) {
-		while (reader.hasMention()) {
-			Mention mention = reader.getMention();
-			int fromCode = getOrCreateCode(mention.from);
-			int toCode = getOrCreateCode(mention.to);
-			auto& entryList = entries[fromCode];
-			Entry entry = {toCode, 1, mention.timestamp};
-			auto it = lower_bound(entryList.begin(), entryList.end(), entry);
-			if (it != entryList.end() && it->to == toCode) {
-				it->count++;
-			} else {
-				entryList.push_back(entry);
-				sort(entryList.begin(), entryList.end());
-			}
+TwitterGraph::TwitterGraph(istream& input) :
+	giantComponentID(-1)
+{
+	int from, to;
+	char timestamp[21] = {0};
+	int prevFrom = 0;
+	int readEdges = 0;
+	while (input >> from >> to) {
+		input.ignore();
+		input.read(timestamp, 20);
+		if (from != prevFrom) {
+			assert(from > prevFrom && "Input data should be sorted.");
+			nodes.resize(from + 1);
+			nodes[prevFrom].numEdges = readEdges;
+			nodes[from].edgeOffset = nodes[prevFrom].edgeOffset + readEdges;
+
+			prevFrom = from;
+			readEdges = 0;
 		}
+
+		edges.push_back(to);
+		readEdges++;
 	}
 }
 
-int TwitterGraph::getOrCreateCode(const string& username)
+int TwitterGraph::numEdges() const
 {
-	auto it = userToCodeMap.find(username);
-	if (it != userToCodeMap.end()) {
-		return it->second;
-	} else {
-		maxUserCode = maxUserCode + 1;
-		userToCodeMap[username] = maxUserCode;
-		codeToUserMap[maxUserCode] = username;
-		entries.emplace_back();
-		return maxUserCode;
-	}
+	return edges.size();
 }
 
-bool TwitterGraph::Entry::operator < (const TwitterGraph::Entry& other) const
+int TwitterGraph::numNodes() const
 {
-	return to < other.to;
+	return nodes.size() - 1;
 }
