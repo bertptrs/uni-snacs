@@ -18,7 +18,7 @@ userCode.mapping = {}
 
 
 def main():
-    usernamePattern = re.compile('\W@([a-zA-Z0-9_]+)')
+    usernamePattern = re.compile('\W@([a-zA-Z0-9_]{1,15})\W')
 
     print("Source\tTarget\tTimestamp")
     print("Id\tLabel", file=sys.stderr)
