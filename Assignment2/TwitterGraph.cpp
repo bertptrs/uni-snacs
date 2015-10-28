@@ -6,7 +6,8 @@
 
 Node::Node():
 	componentID(TwitterGraph::NO_COMPONENT),
-	inDegree(0)
+	inDegree(0),
+	outDegree(0)
 {
 }
 
@@ -26,24 +27,43 @@ TwitterGraph::TwitterGraph(istream& input) :
 		}
 
 		nodes[to].inDegree++;
-		adjList[from][to].first++;
-
-		if (adjList[from][to].first == 1) {
-			adjList[from][to].second = string(timestamp);
-		}
+		nodes[from].outDegree++;
+		adjList[from][to]++;
+		adjList[to][from]++;
 	}
 }
 
-int TwitterGraph::numEdges() const
+int TwitterGraph::numEdges(int componentID) const
 {
-	return accumulate(adjList.begin(), adjList.end(), 0, [](int curSum, const map<int, pair<int, string>>& item) {
+	if (componentID == NO_COMPONENT) {
+	return accumulate(adjList.begin(), adjList.end(), 0, [](int curSum, const map<int, int>& item) {
 			return curSum + item.size();
-			});
+			}) / 2;
+	} else {
+		int edgesNo = 0;
+		for (int i = 0; i < (int) nodes.size(); i++) {
+			if (nodes[i].componentID != componentID) {
+				continue;
+			}
+			for (auto& neighbour : adjList[i]) {
+				if (nodes[neighbour.first].componentID == componentID) {
+					edgesNo++;
+				}
+			}
+		}
+		return edgesNo / 2;
+	}
 }
 
-int TwitterGraph::numNodes() const
+int TwitterGraph::numNodes(int componentID) const
 {
-	return nodes.size() - 1;
+	if (componentID == NO_COMPONENT) {
+		return nodes.size() - 1;
+	} else {
+		return count_if(nodes.begin(), nodes.end(), [componentID](const Node& node) -> bool {
+			return node.componentID == componentID;
+		});
+	}
 }
 
 int TwitterGraph::weakComponents()
@@ -77,7 +97,7 @@ int TwitterGraph::weakComponents()
 	const auto it = max_element(componentCounts.begin(), componentCounts.end());
 	giantComponentID = distance(componentCounts.begin(), it);
 
-	return *it;
+	return giantComponentID;
 }
 
 template<class CallbackType>
@@ -121,7 +141,5 @@ int TwitterGraph::inDegree(int node) const
 
 int TwitterGraph::outDegree(int node) const
 {
-	return accumulate(adjList[node].begin(), adjList[node].end(), 0, [] (int curSum, const pair<int, pair<int, string>>& item) {
-		return curSum + item.second.first;
-	});
+	return nodes[node].outDegree;
 }

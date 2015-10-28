@@ -1,14 +1,18 @@
 \documentclass[a4paper,10pt,hidelinks]{article}
 
+\usepackage[margin=2cm]{geometry}
+
 \usepackage{tikz}
 \usepackage{hyperref}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{amsmath}
 
 \usepackage{listings}
 \lstset{
     numbers=left,
-    breaklines=true
+    breaklines=true,
+    tabsize=4
 }
 
 \newcommand{\algorithmautorefname}{Algorithm}
@@ -30,7 +34,9 @@ s1147919}
 
  \item There are several possible such graphs. One of them is shown in \autoref{fig:graph-no-clustering}.
  
- \item Contructing an unclustered graph is trivial for when $m \leq n$, because we can construct a circle graph of size $n$ and remove edges to arrive at the desired number of edges. The algorithm is shown in \autoref{algo:algo-no-clustering}.
+ \item Contructing an unclustered graph is trivial for when $m \leq n$, because we can construct a circle graph of size $n$ and remove edges to arrive at the desired number of edges. The algorithm is shown in \autoref{algo:algo-no-clustering} and runs in $O(m)$.
+ 
+The algorithm works by adding repeatedly connecting each node $v_i$ to another node $v_{i + \delta}$. This delta is increased over iterations, and is given by $\delta = 3^s$ where $s$ is the current iteration number, starting at 1. This ensures that we do not create new loops shorter than 4, which is what we need in order to prevent clustering.
 \end{enumerate}
 
 \begin{figure}
@@ -78,7 +84,13 @@ s1147919}
 
 \begin{algorithmic}
     \State $E \gets \emptyset$
-    \Comment{TODO}
+    \State $s \gets 1$
+    \While{$|E| < m \land 3^s < n$}
+    		\For{$v_i \in V \land |E| < m$}
+    			\State $E \gets E \cup \{\{v_i, v_{i + 3^s \text{ mod } n} \}\}$
+    		\EndFor
+    		\State $s \gets s + 1$
+    \EndWhile
 \end{algorithmic}
 
 \end{algorithm}
@@ -105,10 +117,67 @@ Using the above algorithm, we arrive at the results as shown in \autoref{tab:den
 
 \section{Twitter Network Extraction}
 
+
+
 \subsection{Parsing the tweets}
 
-We parse the tweets using a python script in \autoref{lst:preprocess}. It takes a list of files as arguments from the command line or data from the standard input. It attempts to parse out a mention using a regular expression. The expression used is a non-word character, followed by an '@', followed by at most 15 word characters, followed by by a non-word character.
+We parse the tweets using a python script in \autoref{lst:preprocess}. It takes a list of files as arguments from the command line or data from the standard input. First, it splits the string twice on the first occurrence of a tab. It attempts to parse mentions out of a tweet using a regular expression. The expression used is a non-word character\footnote{A word character is defined as either an ascii letter character (upper case and lower case), a digit, or an underscore character (`\texttt{\_}'). Everything else, including the `\texttt{\^}' (start of string) and `\texttt{\$}' (end of string) metacharacters is considered a non-word character.}, followed by an `\texttt{@}', followed by $[1, 15]$ word characters\footnote{The specification of what is a valid twitter username can be found at \url{https://support.twitter.com/articles/101299}}, followed by by a non-word character. Requiring a non-word character before the mention filters out email addresses, which occur frequently in the dataset. The resulting usernames are put in lowercase, because twitter usernames are case-insensitive.
+
+The script determines a mapping from usernames to integers, because this is more convenient to handle programmatically in the analysis. It outputs a Gephi-edgelist compatible list of mentions to the standard output, and a Gephi-nodelist compatible username mapping to the standard error.
+
+There are still a number of things that the parser does wrong. The most prevalent error happens when users have no separator (either white space or punctuation) between a mention and the following text. In this case, it is impossible to determine where the username ends and the tweet continues. This can only be solved when you know all usernames in your dataset.
+
+This problems described above can, however, be solved by using the twitter api. It provides any mentions included in a message as meta data, removing the need for complicated parsers. Implementing this is outside the scope of this assignment.
+
+\subsection{Dataset statistics}
+
+We consider the graph as an undirected graph. We use our parser program to get some statistics about our dataset. The results are shown in \autoref{tab:dataset-stats}. For the degree distribution, we reuse the python script from the previous assignment. This gives us the distribution as shown in \autoref{fig:graph-no-clustering}.
+
+Edges occurring multiple times are counted towards node degrees, but not towards the number of edges. In other words, the equation $\sum\limits_{v_i} k(v_i) = 2|V|$ does not hold.
+
+For density, we take the measure $D = \frac{|V|}{|E|(|E| - 1)}$. Since, in a social network, the average degree does not depend on the number of nodes in the network, we we expect the density to drop linearly with the number of nodes. This is because $\lim_{n \rightarrow \infty} \frac{cn}{n (n - 1)} = \frac{1}{n}$. Furthermore, there should be a slightly lower  density in the entire network and that in the giant component. This is because the network contains a lot of isolated nodes, i.e. people that have tweeted, but not mentioned, and who have not been mentioned.
+
+\begin{table}
+	\centering
+	\begin{tabular}{l || r | r | c | r | r | c}
+	Dataset & $|V|$ & $|E|$ & $D$ & $|V_{giant}|$ & $|E_{giant}|$ & $D_{giant}$ \\
+	\hline
+	\texttt{twitter-small} & 47972 & 54517 & $2.4 \cdot 10^{-5}$ & 32864 & 45171 & $4.2 \cdot 10^{-5}$ \\
+	\texttt{twitter-larger} & 403406 & 709052 & $4.4 \cdot 10^{-6}$ & 334654 & 667076 \\
+	\texttt{twitter} & 8957362 & 61960704 & $7.7 \cdot  10^{-7}$ & 8706254 & 8957362
+	\end{tabular}
+	\caption{Dataset statistics}
+	\label{tab:dataset-stats}
+\end{table}
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.8]{degree-distributions.pdf}
+	\caption{Degree distribution for all datasets.}
+\end{figure}
 
 \lstinputlisting[language=python,label=lst:preprocess,caption=Preprocessing script for the twitter data.,float]{preprocess.py}
+
+\pagebreak
+
+\appendix
+
+\section{parser.cpp}
+
+\lstinputlisting[language=c++]{parser.cpp}
+
+\pagebreak
+
+\section{TwitterGraph.hpp}
+
+\lstinputlisting[language=c++]{TwitterGraph.hpp}
+
+\pagebreak
+
+\section{TwitterGraph.cpp}
+
+\lstinputlisting[language=c++]{TwitterGraph.cpp}
+
+\pagebreak
 
 \end{document}

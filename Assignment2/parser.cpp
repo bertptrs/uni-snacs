@@ -21,6 +21,17 @@ void cmdDegrees(bool out, const TwitterGraph& graph) {
 	}
 }
 
+void cmdStats(TwitterGraph& graph)
+{
+	cout << "In the entire graph are" << endl;
+	cout << graph.numEdges() << " edges" << endl;
+	cout << graph.numNodes() << " nodes" << endl;
+	int giantComponent = graph.weakComponents();
+	cout << "In the giant component are" << endl;
+	cout << graph.numEdges(giantComponent) << " edges" << endl;
+	cout << graph.numNodes(giantComponent) << " nodes" << endl;
+}
+
 int main(int argc, char** argv)
 {
 	if (argc < 2) {
@@ -32,6 +43,11 @@ int main(int argc, char** argv)
 
 	if (!strcmp(argv[1], "indegrees") || !strcmp(argv[1], "outdegrees")) {
 		cmdDegrees(!strcmp(argv[1], "outdegrees"), g);
+		return 0;
+	}
+
+	if (!strcmp(argv[1], "stats")) {
+		cmdStats(g);
 		return 0;
 	}
 

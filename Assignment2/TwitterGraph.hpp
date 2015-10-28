@@ -13,6 +13,7 @@ using namespace std;
 struct Node {
 	int componentID;
 	int inDegree;
+	int outDegree;
 
 	Node();
 };
@@ -26,8 +27,8 @@ class TwitterGraph
 		TwitterGraph(const TwitterGraph&) = default;
 		TwitterGraph(TwitterGraph&&) = default;
 
-		int numEdges() const;
-		int numNodes() const;
+		int numEdges(int componentID = NO_COMPONENT) const;
+		int numNodes(int componentID = NO_COMPONENT) const;
 
 		int weakComponents();
 
@@ -35,7 +36,7 @@ class TwitterGraph
 		int outDegree(int node) const;
 
 	private:
-		vector<map<int, pair<int, string>>> adjList; // Destination and timestamp.
+		vector<map<int, int>> adjList; // Destination and timestamp.
 		vector<Node> nodes; // Offset and number of edges 
 		int giantComponentID;
 
