@@ -5,12 +5,12 @@
 #include <utility>
 #include <vector>
 #include <iostream>
+#include <map>
+#include <string>
 
 using namespace std;
 
 struct Node {
-	int numEdges;
-	int edgeOffset;
 	int componentID;
 	int inDegree;
 
@@ -35,7 +35,7 @@ class TwitterGraph
 		int outDegree(int node) const;
 
 	private:
-		vector<pair<int, int>> edges; // Destination and timestamp.
+		vector<map<int, pair<int, string>>> adjList; // Destination and timestamp.
 		vector<Node> nodes; // Offset and number of edges 
 		int giantComponentID;
 

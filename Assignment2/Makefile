@@ -7,6 +7,6 @@ all: parser
 
 clean:
 	$(RM) parser
-	$(RM) *.o
+	$(RM) $(wildcard *.o)
 
 parser: parser.cpp TwitterGraph.o

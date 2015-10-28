@@ -5,8 +5,6 @@
 #include <iterator>
 
 Node::Node():
-	numEdges(0),
-	edgeOffset(0),
 	componentID(TwitterGraph::NO_COMPONENT),
 	inDegree(0)
 {
@@ -18,45 +16,29 @@ TwitterGraph::TwitterGraph(istream& input) :
 {
 	int from, to;
 	char timestamp[21] = {0};
-	int prevFrom = 0;
-	int readEdges = 0;
-	int prevTo = -1;
 	while (input >> from >> to) {
 		input.ignore();
 		input.read(timestamp, 20);
 		const unsigned int requiredSize = max(from, to) + 1;
 		if (nodes.size() < requiredSize) {
 			nodes.resize(requiredSize);
-		}
-		if (from != prevFrom) {
-			assert(from > prevFrom && "Input data should be sorted.");
-			nodes[prevFrom].numEdges = readEdges;
-			nodes[from].edgeOffset = nodes[prevFrom].edgeOffset + readEdges;
-
-			prevFrom = from;
-			readEdges = 0;
-			prevTo = -1;
-		}
-
-		if (prevTo != to) {
-			assert(to > prevTo && "Input data should be sorted.");
-			prevTo = to;
-			edges.emplace_back(to, 1);
-		} else {
-			edges[edges.size() - 1].second++;
+			adjList.resize(requiredSize);
 		}
 
 		nodes[to].inDegree++;
+		adjList[from][to].first++;
 
-		readEdges++;
+		if (adjList[from][to].first == 1) {
+			adjList[from][to].second = string(timestamp);
+		}
 	}
-
-	nodes[prevFrom].numEdges = readEdges;
 }
 
 int TwitterGraph::numEdges() const
 {
-	return edges.size();
+	return accumulate(adjList.begin(), adjList.end(), 0, [](int curSum, const map<int, pair<int, string>>& item) {
+			return curSum + item.size();
+			});
 }
 
 int TwitterGraph::numNodes() const
@@ -112,13 +94,12 @@ void TwitterGraph::bfs(const int startNode, CallbackType callback)
 		todo.pop();
 
 		const bool shouldQueue = callback(current);
-		const int numNodes = nodes[current].numEdges;
-		for (int i = 0; i < numNodes; i++) {
-			const int next = edges[nodes[current].edgeOffset + i].first;
+		for (const auto edge : adjList[current]) {
+			const int next = edge.first;
 			if (!queued[next] && shouldQueue) {
 				todo.push(next);
+				queued[next] = true;
 			}
-			queued[next] = true;
 		}
 	}
 }
@@ -140,11 +121,7 @@ int TwitterGraph::inDegree(int node) const
 
 int TwitterGraph::outDegree(int node) const
 {
-	int degree = 0;
-	pair<int, int> const * const edgeList = &edges[nodes[node].edgeOffset]; 
-	for (int i = 0; i < nodes[node].numEdges; i++) {
-		degree += edgeList[i].second;
-	}
-
-	return degree;
+	return accumulate(adjList[node].begin(), adjList[node].end(), 0, [] (int curSum, const pair<int, pair<int, string>>& item) {
+		return curSum + item.second.first;
+	});
 }
