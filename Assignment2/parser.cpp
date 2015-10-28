@@ -23,13 +23,18 @@ void cmdDegrees(bool out, const TwitterGraph& graph) {
 
 void cmdStats(TwitterGraph& graph)
 {
-	cout << "In the entire graph are" << endl;
-	cout << graph.numEdges() << " edges" << endl;
-	cout << graph.numNodes() << " nodes" << endl;
-	int giantComponent = graph.weakComponents();
-	cout << "In the giant component are" << endl;
-	cout << graph.numEdges(giantComponent) << " edges" << endl;
-	cout << graph.numNodes(giantComponent) << " nodes" << endl;
+	int nodes = graph.numNodes(), edges = graph.numEdges();
+	cout << "In the entire graph are" << endl
+		<< nodes << " nodes" << endl
+		<< edges << " edges" << endl
+		<< "Density: " << edges / (nodes * (nodes - 1.0)) << endl;
+
+	const int giantComponent = graph.weakComponents();
+	nodes = graph.numNodes(giantComponent), edges = graph.numEdges(giantComponent);
+	cout << "In the giant component are" << endl
+		<< nodes << " nodes" << endl
+		<< edges << " edges" << endl
+		<< "Density: " << edges / (nodes * (nodes - 1.0)) << endl;
 }
 
 int main(int argc, char** argv)
