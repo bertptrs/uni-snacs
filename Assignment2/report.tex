@@ -10,9 +10,9 @@
 
 \usepackage{listings}
 \lstset{
-    numbers=left,
-    breaklines=true,
-    tabsize=4
+	numbers=left,
+	breaklines=true,
+	tabsize=4
 }
 
 \newcommand{\algorithmautorefname}{Algorithm}
@@ -30,68 +30,68 @@ s1147919}
 \section{Clustering Coefficient}
 
 \begin{enumerate}
- \item A tree, by definition, has no loops, and therefore has a clustering coefficient of 0. Another example is a bipartite graph. This type of graph can only have cycles of at least length 4. This is because it is impossible for two edges in the same partition to have a connection. Cycles of length 4 do not contribute to the clustering coefficient, because that only counts the number of triangles, i.e. the number of cycles of length 3.
+	\item A tree, by definition, has no loops, and therefore has a clustering coefficient of 0. Another example is a bipartite graph. This type of graph can only have cycles of at least length 4. This is because it is impossible for two edges in the same partition to have a connection. Cycles of length 4 do not contribute to the clustering coefficient, because that only counts the number of triangles, i.e. the number of cycles of length 3.
 
- \item There are several possible such graphs. One of them is shown in \autoref{fig:graph-no-clustering}.
- 
- \item Contructing an unclustered graph is trivial for when $m \leq n$, because we can construct a circle graph of size $n$ and remove edges to arrive at the desired number of edges. The algorithm is shown in \autoref{algo:algo-no-clustering} and runs in $O(m)$.
- 
-The algorithm works by adding repeatedly connecting each node $v_i$ to another node $v_{i + \delta}$. This delta is increased over iterations, and is given by $\delta = 3^s$ where $s$ is the current iteration number, starting at 1. This ensures that we do not create new loops shorter than 4, which is what we need in order to prevent clustering.
+	\item There are several possible such graphs. One of them is shown in \autoref{fig:graph-no-clustering}.
+
+	\item Contructing an unclustered graph is trivial for when $m \leq n$, because we can construct a circle graph of size $n$ and remove edges to arrive at the desired number of edges. The algorithm is shown in \autoref{algo:algo-no-clustering} and runs in $O(m)$.
+
+		The algorithm works by adding repeatedly connecting each node $v_i$ to another node $v_{i + \delta}$. This delta is increased over iterations, and is given by $\delta = 3^s$ where $s$ is the current iteration number, starting at 1. This ensures that we do not create new loops shorter than 4, which is what we need in order to prevent clustering.
 \end{enumerate}
 
 \begin{figure}
-    \centering
-    \begin{tikzpicture}[every node/.style={draw=black,thick,circle}]
-        \node (A) at (0,4){A};
-        \node (B) at (-2,2){B};
-        \node (C) at (0,2){C};
-        \node (D) at (2,2){D};
-        \node (E) at (-2,0){E};
-        \node (F) at (0,0){F};
-        \node (G) at (2,0){G};
-        \node (H) at (-2,-2){H};
-        \node (I) at (0,-2){I};
-        \node (J) at (2,-2){J};
-        
-        \draw (A) -- (C);
-        \draw (B) -- (C);
-        \draw (C) -- (D);
-        \draw (B) -- (E);
-        \draw (C) -- (F);
-        \draw (E) -- (F);
-        \draw (D) -- (G);
-        \draw (F) -- (G);
-        \draw (E) -- (H);
-        \draw (H) -- (I);
-        \draw (F) -- (I);
-        \draw (I) -- (J);
-        \draw (G) -- (J);
-        
-        \draw (B) -- (G);
-        \draw (D) -- (E);
-        
-        \draw (E) -- (J);
-        \draw (G) -- (H);
+	\centering
+	\begin{tikzpicture}[every node/.style={draw=black,thick,circle}]
+		\node (A) at (0,4){A};
+		\node (B) at (-2,2){B};
+		\node (C) at (0,2){C};
+		\node (D) at (2,2){D};
+		\node (E) at (-2,0){E};
+		\node (F) at (0,0){F};
+		\node (G) at (2,0){G};
+		\node (H) at (-2,-2){H};
+		\node (I) at (0,-2){I};
+		\node (J) at (2,-2){J};
 
-    \end{tikzpicture}
-    \caption{An undirected graph with 10 nodes, 15 edges, and a clustering coefficient of 0.}
-    \label{fig:graph-no-clustering}
+		\draw (A) -- (C);
+		\draw (B) -- (C);
+		\draw (C) -- (D);
+		\draw (B) -- (E);
+		\draw (C) -- (F);
+		\draw (E) -- (F);
+		\draw (D) -- (G);
+		\draw (F) -- (G);
+		\draw (E) -- (H);
+		\draw (H) -- (I);
+		\draw (F) -- (I);
+		\draw (I) -- (J);
+		\draw (G) -- (J);
+
+		\draw (B) -- (G);
+		\draw (D) -- (E);
+
+		\draw (E) -- (J);
+		\draw (G) -- (H);
+
+	\end{tikzpicture}
+	\caption{An undirected graph with 10 nodes, 15 edges, and a clustering coefficient of 0.}
+	\label{fig:graph-no-clustering}
 \end{figure}
 
 \begin{algorithm}
-\caption{Constructing a graph with no clustering.}
-\label{algo:algo-no-clustering}
+	\caption{Constructing a graph with no clustering.}
+	\label{algo:algo-no-clustering}
 
-\begin{algorithmic}
-    \State $E \gets \emptyset$
-    \State $s \gets 1$
-    \While{$|E| < m \land 3^s < n$}
-    		\For{$v_i \in V \land |E| < m$}
-    			\State $E \gets E \cup \{\{v_i, v_{i + 3^s \text{ mod } n} \}\}$
-    		\EndFor
-    		\State $s \gets s + 1$
-    \EndWhile
-\end{algorithmic}
+	\begin{algorithmic}
+		\State $E \gets \emptyset$
+		\State $s \gets 1$
+		\While{$|E| < m \land 3^s < n$}
+		\For{$v_i \in V \land |E| < m$}
+		\State $E \gets E \cup \{\{v_i, v_{i + 3^s \text{ mod } n} \}\}$
+		\EndFor
+		\State $s \gets s + 1$
+		\EndWhile
+	\end{algorithmic}
 
 \end{algorithm}
 
@@ -99,20 +99,20 @@ The algorithm works by adding repeatedly connecting each node $v_i$ to another n
 
 We start by computing the average degree and the current density. For a graph with a given $n, m$ this is easy, because the average degree is $\frac{2m}{n}$ and the density is half of that. We run our algortihm, by iteratively removing the nodes with a degree lower than the average degree from our $V$ and $E$, and repeat the process until we cannot delete nodes anymore.
 
-Using the above algorithm, we arrive at the results as shown in \autoref{tab:densest-subgraph}. We see that after iteration 1, we already find our maximum, with a density of 1.5. After that, we still delete nodes twice, until we arrive at a graph with two nodes and cannot delete nodes anymore.
+Using the above algorithm, we arrive at the results as shown in \autoref{tab:densest-subgraph}. We see that after iteration 1, we already find our maximum, with a density of 1.5. After that, we still delete nodes twice, until we arrive at a graph with two nodes and cannot delete nodes any more.
 
 \begin{table}
-    \centering
-    \begin{tabular}{r || l | r | r}
-        Iteration & Subgraph & Density & Avg. degree\\
-        \hline
-        0   & $\{A B C D E F H I J K L\}$ & $\frac{16}{11} \approx 1.45 $ & $\frac{32}{11} \approx 2.9 $ \\
-        1   & $\{A B E F J K\}$ & $ \frac{9}{6} = 1.5 $ & $ \frac{18}{6} = 3 $ \\
-        2   & $\{B E F J\}$ & $\frac{5}{4} = 1.25$ & $\frac{10}{4} = 2.5$ \\
-        3   & $\{E F\}$ & $\frac{1}{2} = 0.5$ & $\frac{2}{2} = 1$
-    \end{tabular}
-    \caption{Using the greedy algorithm to find the densest subgraph.}
-    \label{tab:densest-subgraph}
+	\centering
+	\begin{tabular}{r || l | r | r}
+		Iteration & Subgraph & Density & Avg. degree\\
+		\hline
+		0   & $\{A B C D E F H I J K L\}$ & $\frac{16}{11} \approx 1.45 $ & $\frac{32}{11} \approx 2.9 $ \\
+		1   & $\{A B E F J K\}$ & $ \frac{9}{6} = 1.5 $ & $ \frac{18}{6} = 3 $ \\
+		2   & $\{B E F J\}$ & $\frac{5}{4} = 1.25$ & $\frac{10}{4} = 2.5$ \\
+		3   & $\{E F\}$ & $\frac{1}{2} = 0.5$ & $\frac{2}{2} = 1$
+	\end{tabular}
+	\caption{Using the greedy algorithm to find the densest subgraph.}
+	\label{tab:densest-subgraph}
 \end{table}
 
 \section{Twitter Network Extraction}
@@ -131,24 +131,24 @@ This problems described above can, however, be solved by using the twitter api. 
 
 \subsection{Dataset statistics}
 
+\begin{table}
+	\centering
+	\begin{tabular}{l || r | r | c | r | r | c}
+		Dataset & $|V|$ & $|E|$ & $D$ & $|V_{giant}|$ & $|E_{giant}|$ & $D_{giant}$ \\
+		\hline
+		\texttt{twitter-small} & 47972 & 54517 & $2.4 \cdot 10^{-5}$ & 32864 & 45171 & $4.2 \cdot 10^{-5}$ \\
+		\texttt{twitter-larger} & 403406 & 709052 & $4.4 \cdot 10^{-6}$ & 334654 & 667076 \\
+		\texttt{twitter} & 8957362 & 61960704 & $7.7 \cdot  10^{-7}$ & 8706254 & 8957362
+	\end{tabular}
+	\caption{Dataset statistics}
+	\label{tab:dataset-stats}
+\end{table}
+
 We consider the graph as an undirected graph. We use our parser program to get some statistics about our dataset. The results are shown in \autoref{tab:dataset-stats}. For the degree distribution, we reuse the python script from the previous assignment. This gives us the distribution as shown in \autoref{fig:graph-no-clustering}.
 
 Edges occurring multiple times are counted towards node degrees, but not towards the number of edges. In other words, the equation $\sum\limits_{v_i} k(v_i) = 2|V|$ does not hold.
 
 For density, we take the measure $D = \frac{|V|}{|E|(|E| - 1)}$. Since, in a social network, the average degree does not depend on the number of nodes in the network, we we expect the density to drop linearly with the number of nodes. This is because $\lim_{n \rightarrow \infty} \frac{cn}{n (n - 1)} = \frac{1}{n}$. Furthermore, there should be a slightly lower  density in the entire network and that in the giant component. This is because the network contains a lot of isolated nodes, i.e. people that have tweeted, but not mentioned, and who have not been mentioned.
-
-\begin{table}
-	\centering
-	\begin{tabular}{l || r | r | c | r | r | c}
-	Dataset & $|V|$ & $|E|$ & $D$ & $|V_{giant}|$ & $|E_{giant}|$ & $D_{giant}$ \\
-	\hline
-	\texttt{twitter-small} & 47972 & 54517 & $2.4 \cdot 10^{-5}$ & 32864 & 45171 & $4.2 \cdot 10^{-5}$ \\
-	\texttt{twitter-larger} & 403406 & 709052 & $4.4 \cdot 10^{-6}$ & 334654 & 667076 \\
-	\texttt{twitter} & 8957362 & 61960704 & $7.7 \cdot  10^{-7}$ & 8706254 & 8957362
-	\end{tabular}
-	\caption{Dataset statistics}
-	\label{tab:dataset-stats}
-\end{table}
 
 \begin{figure}
 	\centering
@@ -156,11 +156,58 @@ For density, we take the measure $D = \frac{|V|}{|E|(|E| - 1)}$. Since, in a soc
 	\caption{Degree distribution for all datasets.}
 \end{figure}
 
-\lstinputlisting[language=python,label=lst:preprocess,caption=Preprocessing script for the twitter data.,float]{preprocess.py}
+\subsection{Top Twitter users}
+To compute the top 20 twitter users in our dataset, we consider the following centrality measures:
+
+\begin{description}
+	\item[Degree centrality] which is simply the degree of the node. For our dataset, we have merged the in- and outdegree of a node into a single value. We then sort the nodes in descending order. We define it as $DC(u) = \max(\forall v in V : k(v))$.
+
+	\item[Eccentricity centrality] which is the longest shortest path starting from a node. The idea is, that if your eccentricity is low, you are fairly central. It is defined as $EC(u) = \max(\forall v \in V : d(u, v))$.
+
+	\item[Closeness centrality] which is somewhat related to the eccentricity centrality, but is slightly different, because we take the average path length rather than the total path length. This gives us $CC(u) = \frac{\sum_{v \neq u \in V}}{|V| - 1}$.
+\end{description}
+
+We then apply these measures to the \texttt{twitter-small} dataset. The results are shown in \autoref{tab:small-top-users}.
+
+\begin{table}
+	\centering
+	\begin{tabular}{l || l | l | l}
+		& $DC$ & $EC$ & $CC$ \\
+		\hline
+		1 & theiphoneblog \\
+		2 & ryanbarr \\
+		3 & mashable \\
+		4 & scottbourne \\
+		5 & scancafe \\
+		6 & squarespace \\
+		7 & tweetmeme \\
+		8 & iphone\_dev \\
+		9 & tweetdeck \\
+		10 & kevinrose \\
+		11 & tomtom \\
+		12 & techcrunch \\
+		13 & patrickaltoft \\
+		14 & iphoneincanada \\
+		15 & quickpwn \\
+		16 & engadget \\
+		17 & tinteract \\
+		18 & tuaw \\
+		19 & guardiantech \\
+		20 & igncom
+	\end{tabular}
+	\caption{Top 20 users in \texttt{twitter-small} according to different measures.}
+	\label{tab:small-top-users}
+\end{table}
 
 \pagebreak
 
 \appendix
+
+\section{preprocess.py}
+\label{lst:preprocess}
+\lstinputlisting[language=python]{preprocess.py}
+\pagebreak
+
 
 \section{parser.cpp}
 
