@@ -143,3 +143,20 @@ int TwitterGraph::outDegree(int node) const
 {
 	return nodes[node].outDegree;
 }
+
+void TwitterGraph::print(ostream& stream, int componentID) const
+{
+	for (int i = 0; i < numNodes(); i++)
+	{
+		if (componentID != NO_COMPONENT && nodes[i].componentID != componentID) {
+			continue;
+		}
+
+		for (auto& neighbour : adjList[i]) {
+			if (neighbour.first >= i) {
+				break;
+			}
+			stream << i << "\t" << neighbour.first << "\t" << neighbour.second << endl;
+		}
+	}
+}

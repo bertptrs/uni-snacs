@@ -12,6 +12,7 @@ void printUsage(char** argv)
 		<< "\tstats" << endl
 		<< "\tindegrees" << endl
 		<< "\toutdegrees" << endl
+		<< "\tgiant" << endl
 		<< endl;
 }
 
@@ -37,6 +38,12 @@ void cmdStats(TwitterGraph& graph)
 		<< "Density: " << edges / (nodes * (nodes - 1.0)) << endl;
 }
 
+void cmdGiant(TwitterGraph& graph)
+{
+	const int giantComponent = graph.weakComponents();
+	graph.print(cout, giantComponent);
+}
+
 int main(int argc, char** argv)
 {
 	if (argc < 2) {
@@ -53,6 +60,11 @@ int main(int argc, char** argv)
 
 	if (!strcmp(argv[1], "stats")) {
 		cmdStats(g);
+		return 0;
+	}
+
+	if (!strcmp(argv[1], "giant")) {
+		cmdGiant(g);
 		return 0;
 	}
 

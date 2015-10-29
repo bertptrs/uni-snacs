@@ -34,6 +34,12 @@ class TwitterGraph
 
 		int inDegree(int node) const;
 		int outDegree(int node) const;
+		void print(ostream& output, int componentID) const;
+		ostream& operator<< (ostream& stream) const
+		{
+			print(stream, NO_COMPONENT);
+			return stream;
+		}
 
 	private:
 		vector<map<int, int>> adjList; // Destination and timestamp.
