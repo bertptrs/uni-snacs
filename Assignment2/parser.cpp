@@ -44,6 +44,14 @@ void cmdGiant(TwitterGraph& graph)
 	graph.print(cout, giantComponent);
 }
 
+void cmdEccentricities(TwitterGraph& graph)
+{
+	const int giantComponent = graph.weakComponents();
+	cout << "Giant component ID: " << giantComponent << endl;
+	cout << "Diameter: " << graph.diameter(giantComponent) << endl;
+
+}
+
 int main(int argc, char** argv)
 {
 	if (argc < 2) {
@@ -65,6 +73,11 @@ int main(int argc, char** argv)
 
 	if (!strcmp(argv[1], "giant")) {
 		cmdGiant(g);
+		return 0;
+	}
+
+	if (!strcmp(argv[1], "eccentricities")) {
+		cmdEccentricities(g);
 		return 0;
 	}
 

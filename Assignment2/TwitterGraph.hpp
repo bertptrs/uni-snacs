@@ -7,6 +7,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <queue>
 
 using namespace std;
 
@@ -14,6 +15,7 @@ struct Node {
 	int componentID;
 	int inDegree;
 	int outDegree;
+	int eccentricity;
 
 	Node();
 };
@@ -31,6 +33,7 @@ class TwitterGraph
 		int numNodes(int componentID = NO_COMPONENT) const;
 
 		int weakComponents();
+		int diameter(int componentID);
 
 		int inDegree(int node) const;
 		int outDegree(int node) const;
@@ -49,7 +52,28 @@ class TwitterGraph
 		void recolor(int original, int to);
 
 		template<class CallbackType>
-			void bfs(const int startNode, CallbackType callback);
+			void bfs(const int startNode, CallbackType callback)
+			{
+				vector<bool> queued(nodes.size(), false);
+				queue<int> todo;
+
+				todo.push(startNode);
+				queued[startNode] = true;
+
+				while (!todo.empty()) {
+					const int current = todo.front();
+					todo.pop();
+
+					const bool shouldQueue = callback(current);
+					for (const auto edge : adjList[current]) {
+						const int next = edge.first;
+						if (!queued[next] && shouldQueue) {
+							todo.push(next);
+							queued[next] = true;
+						}
+					}
+				}
+			}
 };
 
 #endif

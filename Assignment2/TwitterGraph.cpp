@@ -3,11 +3,14 @@
 #include <cassert>
 #include <queue>
 #include <iterator>
+#include <limits>
+#include <set>
 
 Node::Node():
 	componentID(TwitterGraph::NO_COMPONENT),
 	inDegree(0),
-	outDegree(0)
+	outDegree(0),
+	eccentricity(-1)
 {
 }
 
@@ -98,30 +101,6 @@ int TwitterGraph::weakComponents()
 	giantComponentID = distance(componentCounts.begin(), it);
 
 	return giantComponentID;
-}
-
-template<class CallbackType>
-void TwitterGraph::bfs(const int startNode, CallbackType callback)
-{
-	vector<bool> queued(nodes.size(), false);
-	queue<int> todo;
-
-	todo.push(startNode);
-	queued[startNode] = true;
-
-	while (!todo.empty()) {
-		const int current = todo.front();
-		todo.pop();
-
-		const bool shouldQueue = callback(current);
-		for (const auto edge : adjList[current]) {
-			const int next = edge.first;
-			if (!queued[next] && shouldQueue) {
-				todo.push(next);
-				queued[next] = true;
-			}
-		}
-	}
 }
 
 void TwitterGraph::recolor(int original, int to)
