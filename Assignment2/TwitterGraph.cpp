@@ -95,3 +95,8 @@ void TwitterGraph::print(ostream& stream, int componentID) const
 		}
 	}
 }
+
+int TwitterGraph::eccentricity(int node) const
+{
+	return nodes[node].eccentricity;
+}

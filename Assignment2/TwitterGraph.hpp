@@ -33,7 +33,8 @@ class TwitterGraph
 		int numNodes(int componentID = NO_COMPONENT) const;
 
 		int weakComponents();
-		int diameter(int componentID);
+		int diameter(int componentID, bool progress = false);
+		int eccentricity(int node) const;
 
 		int inDegree(int node) const;
 		int outDegree(int node) const;

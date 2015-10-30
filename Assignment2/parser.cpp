@@ -44,12 +44,22 @@ void cmdGiant(TwitterGraph& graph)
 	graph.print(cout, giantComponent);
 }
 
-void cmdEccentricities(TwitterGraph& graph)
+void cmdDiameter(TwitterGraph& graph)
 {
 	const int giantComponent = graph.weakComponents();
 	cout << "Giant component ID: " << giantComponent << endl;
-	cout << "Diameter: " << graph.diameter(giantComponent) << endl;
+	cout << "Diameter: " << graph.diameter(giantComponent, true) << endl;
+}
 
+void cmdEccentricities(TwitterGraph& graph)
+{
+	const int giantComponent = graph.weakComponents();
+	graph.diameter(giantComponent);
+	for (int i = 0; i < graph.numNodes(); i++) {
+		if (graph.eccentricity(i) >= 0) {
+			cout << i << '\t' << graph.eccentricity(i) << endl;
+		}
+	}
 }
 
 int main(int argc, char** argv)
@@ -73,6 +83,11 @@ int main(int argc, char** argv)
 
 	if (!strcmp(argv[1], "giant")) {
 		cmdGiant(g);
+		return 0;
+	}
+
+	if (!strcmp(argv[1], "diameter")) {
+		cmdDiameter(g);
 		return 0;
 	}
 

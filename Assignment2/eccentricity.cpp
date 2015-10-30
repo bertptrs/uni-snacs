@@ -12,7 +12,7 @@ using namespace std;
  *
  * Slight adaptations to compute the eccentricity for all nodes, rather than the largest eccentricity.
  */
-int TwitterGraph::diameter(int componentID)
+int TwitterGraph::diameter(int componentID, bool progress)
 {
 	vector<pair<int, int>> bounds(adjList.size(), make_pair(0, numeric_limits<int>::max()));
 	vector<int> distance(adjList.size());
@@ -83,7 +83,9 @@ int TwitterGraph::diameter(int componentID)
 			}
 		}
 		it++;
-		cerr << "Iteration " << it << "\tRemaining " << toCompute.size() << endl;
+		if (progress) {
+			cerr << "Iteration " << it << "\tRemaining " << toCompute.size() << endl;
+		}
 	}
 
 	return max_element(bounds.begin(), bounds.end())->first;
