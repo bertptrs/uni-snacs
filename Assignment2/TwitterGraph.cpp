@@ -119,3 +119,17 @@ vector<int> TwitterGraph::computeDistance(int from)
 
 	return distance;
 }
+
+vector<int> TwitterGraph::getShuffled(int componentID)
+{
+	vector<int> resultingNodes;
+	for (int i = 0; i < numNodes(); i++) {
+		if (componentID == NO_COMPONENT || componentID == nodes[i].componentID) {
+			resultingNodes.push_back(i);
+		}
+	}
+
+	shuffle(resultingNodes.begin(), resultingNodes.end(), random);
+
+	return resultingNodes;
+}

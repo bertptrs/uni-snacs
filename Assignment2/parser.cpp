@@ -15,13 +15,14 @@ void printUsage(char** argv)
 		<< "\tgiant" << endl
 		<< "\tdiameter" << endl
 		<< "\teccentricities" << endl
-		<< "\tcloseness\t budget" << endl
+		<< "\tcloseness\tbudget" << endl
+		<< "\tdistance\tbudget" << endl
 		<< endl;
 }
 
 void cmdDegrees(bool out, const TwitterGraph& graph) {
 	for (int i = 1; i <= graph.numNodes(); i++) {
-		cout << i << "\t" << (out ? graph.outDegree(i) : graph.inDegree(i)) << endl;
+		cout << i << '\t' << (out ? graph.outDegree(i) : graph.inDegree(i)) << endl;
 	}
 }
 
@@ -71,8 +72,17 @@ void cmdCloseness(TwitterGraph& graph, int budget)
 	graph.approximateCloseness(budget, giantComponent);
 	for (int i = 1; i < graph.numNodes(); i++) {
 		if (graph.closeness(i) > 0) {
-			cout << i << "\t" << graph.closeness(i) << endl;
+			cout << i << '\t' << graph.closeness(i) << endl;
 		}
+	}
+}
+
+void cmdDistance(TwitterGraph& graph, int budget)
+{
+	const int giantComponent = graph.weakComponents();
+	const map<int, int> dDist = graph.distanceDistribution(budget, giantComponent);
+	for (auto entry : dDist) {
+		cout << entry.first << '\t' << entry.second << endl;
 	}
 }
 
@@ -112,6 +122,11 @@ int main(int argc, char** argv)
 
 	if (!strcmp(argv[1], "closeness") && argc >= 3) {
 		cmdCloseness(g, atoi(argv[2]));
+		return 0;
+	}
+
+	if (!strcmp(argv[1], "distance") && argc >= 3) {
+		cmdDistance(g, atoi(argv[2]));
 		return 0;
 	}
 

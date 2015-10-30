@@ -36,6 +36,7 @@ class TwitterGraph
 		int diameter(int componentID, bool progress = false);
 		int eccentricity(int node) const;
 		void approximateCloseness(int budget, int componentID);
+		map<int, int> distanceDistribution(int budget, int componentID);
 
 		int inDegree(int node) const;
 		int outDegree(int node) const;
@@ -56,6 +57,8 @@ class TwitterGraph
 		int giantComponentID;
 
 		vector<int> computeDistance(int from);
+		// Return the nodes in the specified component, randomly shuffled.
+		vector<int> getShuffled(int componentID = NO_COMPONENT) ;
 
 		void recolor(int original, int to);
 
