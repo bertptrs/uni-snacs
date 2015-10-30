@@ -53,18 +53,7 @@ int TwitterGraph::diameter(int componentID, bool progress)
 			}
 		}
 
-		fill(distance.begin(), distance.end(), -1);
-		distance[bestNode] = 0;
-
-		bfs(bestNode, [&distance, this] (int i) -> bool {
-				for (const auto& neighbour : adjList[i]) {
-					if (distance[neighbour.first] == -1) {
-						distance[neighbour.first] = distance[i] + 1;
-					}
-				}
-				return true;
-		});
-
+		vector<int> distance = computeDistance(bestNode);
 		const int eccentricity = *max_element(distance.begin(), distance.end());
 		bounds[bestNode].first = bounds[bestNode].second = nodes[bestNode].eccentricity = eccentricity;
 		toCompute.erase(bestNode);

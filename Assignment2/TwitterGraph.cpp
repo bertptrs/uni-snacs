@@ -5,16 +5,19 @@
 #include <iterator>
 #include <limits>
 #include <set>
+#include <limits>
 
 Node::Node():
 	componentID(TwitterGraph::NO_COMPONENT),
 	inDegree(0),
 	outDegree(0),
-	eccentricity(-1)
+	eccentricity(-1),
+	closeness(numeric_limits<double>::infinity())
 {
 }
 
 TwitterGraph::TwitterGraph(istream& input) :
+	random(mt19937(random_device()())),
 	nodes(1),
 	giantComponentID(-1)
 {
@@ -99,4 +102,20 @@ void TwitterGraph::print(ostream& stream, int componentID) const
 int TwitterGraph::eccentricity(int node) const
 {
 	return nodes[node].eccentricity;
+}
+
+vector<int> TwitterGraph::computeDistance(int from)
+{
+	vector<int> distance(numNodes(), -1);
+	distance[from] = 0;
+	bfs(from, [&distance, this] (int i) -> bool {
+		for (const auto& neighbour : adjList[i]) {
+			if (distance[neighbour.first] == -1) {
+				distance[neighbour.first] = distance[i] + 1;
+			}
+		}
+		return true;
+	});
+
+	return distance;
 }

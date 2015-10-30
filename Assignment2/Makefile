@@ -9,7 +9,7 @@ clean:
 	$(RM) parser
 	$(RM) $(wildcard *.o)
 
-parser: parser.cpp TwitterGraph.o eccentricity.o components.o
+parser: parser.cpp TwitterGraph.o eccentricity.o components.o closeness.o
 
 report.pdf: report.tex
 	latexmk -xelatex $<

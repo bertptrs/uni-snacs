@@ -2,12 +2,11 @@
 #define TWITTER_GRAPH_H
 
 #include <string>
-#include <utility>
 #include <vector>
 #include <iostream>
 #include <map>
-#include <string>
 #include <queue>
+#include <random>
 
 using namespace std;
 
@@ -16,6 +15,7 @@ struct Node {
 	int inDegree;
 	int outDegree;
 	int eccentricity;
+	double closeness;
 
 	Node();
 };
@@ -35,9 +35,13 @@ class TwitterGraph
 		int weakComponents();
 		int diameter(int componentID, bool progress = false);
 		int eccentricity(int node) const;
+		void approximateCloseness(int budget, int componentID);
 
 		int inDegree(int node) const;
 		int outDegree(int node) const;
+
+		double closeness(int node) const;
+
 		void print(ostream& output, int componentID) const;
 		ostream& operator<< (ostream& stream) const
 		{
@@ -46,9 +50,12 @@ class TwitterGraph
 		}
 
 	private:
+		mt19937 random;
 		vector<map<int, int>> adjList; // Destination and timestamp.
-		vector<Node> nodes; // Offset and number of edges 
+		vector<Node> nodes; // Offset and number of edges
 		int giantComponentID;
+
+		vector<int> computeDistance(int from);
 
 		void recolor(int original, int to);
 

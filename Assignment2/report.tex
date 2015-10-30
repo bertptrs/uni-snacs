@@ -7,6 +7,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{amsmath}
+\usepackage{amssymb}
 
 \usepackage{listings}
 \lstset{
@@ -133,12 +134,12 @@ This problems described above can, however, be solved by using the twitter api. 
 
 \begin{table}
 	\centering
-	\begin{tabular}{l || r | r | c | r | r | c}
-		Dataset & $|V|$ & $|E|$ & $D$ & $|V_{giant}|$ & $|E_{giant}|$ & $D_{giant}$ \\
+	\begin{tabular}{l || r | r | c | r | r | c | r}
+		\multicolumn{1}{c ||}{Dataset} & \multicolumn{1}{c |}{$|V|$} & \multicolumn{1}{c |}{$|E|$} & $D$ & \multicolumn{1}{c |}{$|V_{giant}|$} & \multicolumn{1}{c |}{$|E_{giant}|$} & $D_{giant}$ & Diameter\\
 		\hline
-		\texttt{twitter-small} & 47972 & 54517 & $2.4 \cdot 10^{-5}$ & 32864 & 45171 & $4.2 \cdot 10^{-5}$ \\
-		\texttt{twitter-larger} & 403406 & 709052 & $4.4 \cdot 10^{-6}$ & 334654 & 667076 \\
-		\texttt{twitter} & 8957362 & 61960704 & $7.7 \cdot  10^{-7}$ & 8706254 & 8957362
+		\texttt{twitter-small} & 47568 & 53449 & $2.4 \cdot 10^{-5}$ & 32351 & 44135 & $4.2 \cdot 10^{-5}$ & 21 \\
+		\texttt{twitter-larger} & 398388 & 691080 & $4.4 \cdot 10^{-6}$ & 328358 & 648832 & $6.0 \cdot 10^{-6}$ & 23 \\
+		\texttt{twitter} & 8663906 & 57959449 & $7.7 \cdot  10^{-7}$ & 8402847 & 57813254 & $8.2 \cdot 10^{-7}$ & ?
 	\end{tabular}
 	\caption{Dataset statistics}
 	\label{tab:dataset-stats}
@@ -167,7 +168,7 @@ To compute the top 20 twitter users in our dataset, we consider the following ce
 	\item[Closeness centrality] which is somewhat related to the eccentricity centrality, but is slightly different, because we take the average path length rather than the total path length. This gives us $CC(u) = \frac{\sum_{v \neq u \in V}}{|V| - 1}$.
 \end{description}
 
-We then apply these measures to the \texttt{twitter-small} dataset. The results are shown in \autoref{tab:small-top-users}.
+We then apply these measures to the \texttt{twitter-small} dataset. The results are shown in \autoref{tab:small-top-users}. For eccentricity, there are quite a few nodes with the same value.\footnote{This can be easily seen by observing that the $\forall u \in V: ecc(u) \leq \text{diameter}(G) \land ecc(u) \in \mathbb{N}$ by definition. This means that we do not have a lot of distinct values the eccentricity can take.} In this case, we use degree as a tie-breaker.
 
 \begin{table}
 	\centering
@@ -198,6 +199,8 @@ We then apply these measures to the \texttt{twitter-small} dataset. The results 
 	\caption{Top 20 users in \texttt{twitter-small} according to different measures.}
 	\label{tab:small-top-users}
 \end{table}
+
+We can not easily and objectively compare these rankings on quality, but we can numerically compare how different they are. We do this by counting inversions. This can be done in $O(l^2)$, with $l$ the number of items in our list. This is fairly doable for a top 20. Also, we have to account for nodes that are in one, but not in the other list. For this, we count it as an inversion against everything else, which means it has $l$ inversions.
 
 \pagebreak
 

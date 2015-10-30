@@ -13,11 +13,14 @@ void printUsage(char** argv)
 		<< "\tindegrees" << endl
 		<< "\toutdegrees" << endl
 		<< "\tgiant" << endl
+		<< "\tdiameter" << endl
+		<< "\teccentricities" << endl
+		<< "\tcloseness\t budget" << endl
 		<< endl;
 }
 
 void cmdDegrees(bool out, const TwitterGraph& graph) {
-	for (int i = 0; i <= graph.numNodes(); i++) {
+	for (int i = 1; i <= graph.numNodes(); i++) {
 		cout << i << "\t" << (out ? graph.outDegree(i) : graph.inDegree(i)) << endl;
 	}
 }
@@ -55,9 +58,20 @@ void cmdEccentricities(TwitterGraph& graph)
 {
 	const int giantComponent = graph.weakComponents();
 	graph.diameter(giantComponent);
-	for (int i = 0; i < graph.numNodes(); i++) {
+	for (int i = 1; i < graph.numNodes(); i++) {
 		if (graph.eccentricity(i) >= 0) {
 			cout << i << '\t' << graph.eccentricity(i) << endl;
+		}
+	}
+}
+
+void cmdCloseness(TwitterGraph& graph, int budget)
+{
+	const int giantComponent = graph.weakComponents();
+	graph.approximateCloseness(budget, giantComponent);
+	for (int i = 1; i < graph.numNodes(); i++) {
+		if (graph.closeness(i) > 0) {
+			cout << i << "\t" << graph.closeness(i) << endl;
 		}
 	}
 }
@@ -93,6 +107,11 @@ int main(int argc, char** argv)
 
 	if (!strcmp(argv[1], "eccentricities")) {
 		cmdEccentricities(g);
+		return 0;
+	}
+
+	if (!strcmp(argv[1], "closeness") && argc >= 3) {
+		cmdCloseness(g, atoi(argv[2]));
 		return 0;
 	}
 
