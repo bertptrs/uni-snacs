@@ -155,6 +155,7 @@ For density, we take the measure $D = \frac{|V|}{|E|(|E| - 1)}$. Since, in a soc
 	\centering
 	\includegraphics[scale=0.8]{degree-distributions.pdf}
 	\caption{Degree distribution for all datasets.}
+	\label{fig:degree-distributions}
 \end{figure}
 
 \begin{figure}
@@ -212,6 +213,58 @@ We then apply these measures to the \texttt{twitter-small} dataset. The results 
 We can not easily and objectively compare these rankings on quality, but we can numerically compare how different they are. We do this by counting inversions. This can be done in $O(l^2)$, with $l$ the number of items in our list. This is fairly doable for a top 20. Also, we have to account for nodes that are in one, but not in the other list. For this, we count it as an inversion against everything else, which means it has $l$ inversions.
 
 When we take a look at the resulting top-users in \autoref{tab:small-top-users}, we can see that all three centrality measures are somewhat in agreement over the top users.
+
+%TODO exact comparison between resulting lists.
+
+\subsection{Community detection}
+%TODO
+
+\subsection{Visualisation}
+%TODO
+
+\subsection{Analysing the \texttt{twitter-larger} dataset}
+\begin{table}
+	\centering
+	\begin{tabular}{l || l | l | l}
+		& \multicolumn{1}{c |}{$DC$} & \multicolumn{1}{c |}{$EC$} & \multicolumn{1}{c}{$CC$} \\
+		\hline
+		1 & uberguineapig &  & uberguineapig \\
+		2 & mobil\_tipps & & mashable\\
+		3 & dloblack & & iphone\_mob \\
+		4 & iphonedevnews & & techcrunch \\
+		5 & iphone\_nikki & & tweetmeme \\
+		6 & macandiphone & & startonlinetwit \\
+		7 & riggledo & & razorianfly \\
+		8 & muenchner\_kindl & & sebastianpage \\
+		9 & danlaforce & & tuaw \\
+		10 & iphone\_jedi & & muenchner\_kindl \\
+		11 & tm\_iphone & & dudeman718 \\
+		12 & allthingsiphone & & tm\_iphone \\
+		13 & inflight\_wifi & & topiphone \\
+		14 & ipodtouchroom & & krapps \\
+		15 & esteves08 & & mayhemstudios \\
+		16 & supsappel & & kaisersoeze \\
+		17 & iphone3gupdates &  & theiphoneblog \\
+		18 & tramain360 & & bradgal \\
+		19 & csrandom & & scobleizer \\
+		20 & locaconpistolas & & tm\_technology
+	\end{tabular}
+	\caption{Top 20 users in \texttt{twitter-larger} according to different measures.}
+	\label{tab:larger-top-users}
+\end{table}
+
+Since we use our own parser (see appendices) we can quite easily run the statistics on the \texttt{twitter-larger} dataset. The results are incorporated in \autoref{tab:dataset-stats}, \autoref{fig:degree-distributions}, and \autoref{fig:distance-distributions}. Furthermore, we can compute the eccentricity for every node exactly using the algorithm by F.W. Takes et al. and arrive at the eccentricity for each node in approximately 17,000 breadth first searches. This is about 20 times faster than the naive approach.
+
+The closeness centrality is a bit more challenging to compute. Instead, we approximate it by sampling the distance between 10,000 randomly selected nodes and everything else, and averaging those results.\footnote{While this method is a lot of work, it is doable in about an hour, while doing the entire computation would take slightly over a day.} As a slight bonus, calculating the eccentricities also gives us the diameter of the network, which is shown in \autoref{tab:dataset-stats}. What is interesting, is that the diameter of \texttt{twitter-larger} is only slightly greater than the diameter of \texttt{twitter-small}, despite the former being about ten times smaller than the latter. This is a property often observed in social networks.
+
+\subsection{Bonus: Analysing the complete \texttt{twitter} dataset}
+Our \texttt{C++} code is efficient enough to compute the dataset statistics in reasonable time while only needing 6 GiB of memory.\footnote{The system used had an Intel i7 CPU running at 3.4 GHz and 16 GiB of memory, but only a single thread and 6 GiB of memory was used.} The data is shown in \autoref{tab:dataset-stats}, \autoref{fig:degree-distributions}, and \autoref{fig:distance-distributions}. We used the same approximation of the distance distribution that we used for the other datasets, which took about 40 minutes to compute.
+
+We can also still sample the network 
+
+Computing all eccentricities however was more challenging. At the time of writing, we have spent over 21 hours of computation doing a total of 2,872 breadth first searches, with 1,302,102 eccentricities not yet known. This gives us an average of one BFS every 26 seconds. This, along with the observation that we find at least one eccentricity per search, gives us an upper bound of 391 days for the remaining computation. I therefore do not except a result to this. While I have observed a speed up of over 100 using the algorithm, I still do not expect to see a result before the deadline. Mostly because the system will be rebooted Sunday at 03:00, losing all my progress.
+
+It could still be possible to compute the rankings, as the eccentricity bounds for most low eccentricity nodes become tight very quickly, and for other nodes the bounds are at least very close. Doing so is outside the scope of this project however.
 
 \pagebreak
 
