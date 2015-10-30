@@ -157,6 +157,15 @@ For density, we take the measure $D = \frac{|V|}{|E|(|E| - 1)}$. Since, in a soc
 	\caption{Degree distribution for all datasets.}
 \end{figure}
 
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.8]{distance-distribution}
+	\caption{Approximate distance distributions for all datasets. Bars are relative within one dataset.}
+	\label{fig:distance-distributions}
+\end{figure}
+
+It is infeasible to compute the exact distance distribution for all networks, as this requires computing $\frac{1}{2} n (n-1)$ distances. To do so would require $O(nm)$ time, to perform $n$ breadth first searches. Instead, we use an approximation. For this, we perform 100 breadth first searches and count how often each distance occurs. We then normalize by dividing by the total number of paths found, and arrive at the distribution as shown in \autoref{fig:distance-distributions}.
+
 \subsection{Top Twitter users}
 To compute the top 20 twitter users in our dataset, we consider the following centrality measures:
 
@@ -173,34 +182,36 @@ We then apply these measures to the \texttt{twitter-small} dataset. The results 
 \begin{table}
 	\centering
 	\begin{tabular}{l || l | l | l}
-		& $DC$ & $EC$ & $CC$ \\
+		& \multicolumn{1}{c |}{$DC$} & \multicolumn{1}{c |}{$EC$} & \multicolumn{1}{c}{$CC$} \\
 		\hline
-		1 & theiphoneblog \\
-		2 & ryanbarr \\
-		3 & mashable \\
-		4 & scottbourne \\
-		5 & scancafe \\
-		6 & squarespace \\
-		7 & tweetmeme \\
-		8 & iphone\_dev \\
-		9 & tweetdeck \\
-		10 & kevinrose \\
-		11 & tomtom \\
-		12 & techcrunch \\
-		13 & patrickaltoft \\
-		14 & iphoneincanada \\
-		15 & quickpwn \\
-		16 & engadget \\
-		17 & tinteract \\
-		18 & tuaw \\
-		19 & guardiantech \\
-		20 & igncom
+		1 & theiphoneblog & mashable & theiphoneblog \\
+		2 & ryanbarr & theiphoneblog & mashable\\
+		3 & mashable & ryanbar & tweetmeme\\
+		4 & scottbourne & scottbourne & iphone\_dev\\
+		5 & scancafe & scancafe & tweetdeck\\
+		6 & squarespace & squarespace & allthingsiphone \\
+		7 & tweetmeme & tweetmeme & techcrunch \\
+		8 & iphone\_dev & iphone\_dev & squarespace \\
+		9 & tweetdeck & tweetdeck & kevinrose\\
+		10 & kevinrose & kevinrose & randomslagathor \\
+		11 & tomtom & techcrunch & musclenerd \\
+		12 & techcrunch & engadget & engadget \\
+		13 & patrickaltoft & iphoneincanada & scottbourne \\
+		14 & iphoneincanada & tuaw & tuaw \\
+		15 & quickpwn & guykawasaki & scancafe \\
+		16 & engadget & musclenerd & iphoneincanada \\
+		17 & tinteract &  chrispirillo & razorianfly \\
+		18 & tuaw & parislemon & djsakebomb \\
+		19 & guardiantech & trackle & reneritchie \\
+		20 & igncom & johnbiggs & tmitechnews
 	\end{tabular}
 	\caption{Top 20 users in \texttt{twitter-small} according to different measures.}
 	\label{tab:small-top-users}
 \end{table}
 
 We can not easily and objectively compare these rankings on quality, but we can numerically compare how different they are. We do this by counting inversions. This can be done in $O(l^2)$, with $l$ the number of items in our list. This is fairly doable for a top 20. Also, we have to account for nodes that are in one, but not in the other list. For this, we count it as an inversion against everything else, which means it has $l$ inversions.
+
+When we take a look at the resulting top-users in \autoref{tab:small-top-users}, we can see that all three centrality measures are somewhat in agreement over the top users.
 
 \pagebreak
 
