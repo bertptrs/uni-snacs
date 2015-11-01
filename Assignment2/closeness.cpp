@@ -6,6 +6,9 @@ double TwitterGraph::closeness(int node) const
 	return nodes[node].closeness;
 }
 
+// Create a map of distance -> occurrence for the entire network.
+//
+// This method will do at most budget bfs's, or the number of nodes in the network, whichever is less.
 map<int, int> TwitterGraph::distanceDistribution(int budget, int componentID)
 {
 	const vector<int> nodes = getShuffled(componentID);
@@ -24,6 +27,9 @@ map<int, int> TwitterGraph::distanceDistribution(int budget, int componentID)
 	return distribution;
 }
 
+// This method will set for every node the closeness
+//
+// For this, we use at most budget bfs's, recording the distance to every node in each iteration.
 void TwitterGraph::approximateCloseness(int budget, int componentID)
 {
 	// First, reset all current closeness measures

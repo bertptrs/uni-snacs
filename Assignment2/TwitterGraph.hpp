@@ -23,24 +23,38 @@ struct Node {
 class TwitterGraph
 {
 	public:
+		// Identifier for when we use no connected component, or where indicate
+		// that we don't want to use componenets.
 		static constexpr int NO_COMPONENT = -1;
 
+		// Construct a graph from any input stream. Assumed format is an edge list.
 		TwitterGraph(istream& edges);
+		// Default copy and move constructors.
 		TwitterGraph(const TwitterGraph&) = default;
 		TwitterGraph(TwitterGraph&&) = default;
 
+		// Compute the number of nodes or edges in a certain component.
 		int numEdges(int componentID = NO_COMPONENT) const;
 		int numNodes(int componentID = NO_COMPONENT) const;
 
+		// Determine the weakly connected components. Returns the ID of the largest component.
 		int weakComponents();
+		// Compute the eccentricities for every node in the given component.
+		//
+		// If the progress flag is true, report progress after every BFS.
 		int diameter(int componentID, bool progress = false);
+		// Return the previously computed eccentricity for a given node.
 		int eccentricity(int node) const;
+		// Compute approximate closeness for every node in the specified component.
 		void approximateCloseness(int budget, int componentID);
+		// Compute approximate distance distribution for the specified component.
 		map<int, int> distanceDistribution(int budget, int componentID);
 
+		// Check the degree of a certain node.
 		int inDegree(int node) const;
 		int outDegree(int node) const;
 
+		// Return a previously computed closeness for a node.
 		double closeness(int node) const;
 
 		void print(ostream& output, int componentID) const;
