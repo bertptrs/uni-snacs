@@ -118,8 +118,6 @@ Using the above algorithm, we arrive at the results as shown in \autoref{tab:den
 
 \section{Twitter Network Extraction}
 
-
-
 \subsection{Parsing the tweets}
 
 We parse the tweets using a python script in \autoref{lst:preprocess}. It takes a list of files as arguments from the command line or data from the standard input. First, it splits the string twice on the first occurrence of a tab. It attempts to parse mentions out of a tweet using a regular expression. The expression used is a non-word character\footnote{A word character is defined as either an ascii letter character (upper case and lower case), a digit, or an underscore character (`\texttt{\_}'). Everything else, including the `\texttt{\^}' (start of string) and `\texttt{\$}' (end of string) metacharacters is considered a non-word character.}, followed by an `\texttt{@}', followed by $[1, 15]$ word characters\footnote{The specification of what is a valid twitter username can be found at \url{https://support.twitter.com/articles/101299}}, followed by by a non-word character. Requiring a non-word character before the mention filters out email addresses, which occur frequently in the dataset. The resulting usernames are put in lowercase, because twitter usernames are case-insensitive.
@@ -171,7 +169,7 @@ It is infeasible to compute the exact distance distribution for all networks, as
 To compute the top 20 twitter users in our dataset, we consider the following centrality measures:
 
 \begin{description}
-	\item[Degree centrality] which is simply the degree of the node. For our dataset, we have merged the in- and outdegree of a node into a single value. We then sort the nodes in descending order. We define it as $DC(u) = \max(\forall v in V : k(v))$.
+	\item[Degree centrality] which is simply the degree of the node. For this experiment, we use the the out degree of a node for this. We then sort the nodes in descending order. We define it as $DC(u) = \max(\forall v \in V : k^\rightarrow(v))$.
 
 	\item[Eccentricity centrality] which is the longest shortest path starting from a node. The idea is, that if your eccentricity is low, you are fairly central. It is defined as $EC(u) = \max(\forall v \in V : d(u, v))$.
 
@@ -212,15 +210,20 @@ We then apply these measures to the \texttt{twitter-small} dataset. The results 
 
 We can not easily and objectively compare these rankings on quality, but we can numerically compare how different they are. We do this by counting inversions. This can be done in $O(l^2)$, with $l$ the number of items in our list. This is fairly doable for a top 20. Also, we have to account for nodes that are in one, but not in the other list. For this, we count it as an inversion against everything else, which means it has $l$ inversions.
 
-When we take a look at the resulting top-users in \autoref{tab:small-top-users}, we can see that all three centrality measures are somewhat in agreement over the top users.
-
-%TODO exact comparison between resulting lists.
+When we take a look at the resulting top-users in \autoref{tab:small-top-users}, we can see that all three centrality measures are somewhat in agreement over the top users. This is not unexpected, as all three measures used for determining the rankings are somewhat correlated. For example, having a low eccentricity helps to get a lower closeness, and your closeness is very much influenced by your own outdegree.
 
 \subsection{Community detection}
-%TODO
+We attempt to detect the communities using Gephi. Ideally, we are looking for about 12 communities, as a lower amount would provide very little information and a higher amount would not be visually interprable. When setting the resolution to 1.0, we get thousands of communities. When we set it to 10.0, we find only 4 communities. Halfway in between at 5.0 we find 14 communities, which can be roughly interpreted as some subject on which users tweet.
 
 \subsection{Visualisation}
-%TODO
+To visualise the giant component of the \texttt{twitter-small} network, we use Gephi. Using the community detection described in the previous section, we color the nodes. Furthermore, we scale the nodes according to their betweenness centrality. The resulting network can be seen in \autoref{fig:visualisation}. While improving upon this visualisation, Gephi gave up, so I gave up on visualising.
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.8]{visualisation.pdf}
+	\caption{Visualisation of the \texttt{twitter-small} network. Colors are according to communities, and node size is proportional to betweenness centrality.}
+	\label{fig:visualisation}
+\end{figure}
 
 \subsection{Analysing the \texttt{twitter-larger} dataset}
 \begin{table}
@@ -228,26 +231,26 @@ When we take a look at the resulting top-users in \autoref{tab:small-top-users},
 	\begin{tabular}{l || l | l | l}
 		& \multicolumn{1}{c |}{$DC$} & \multicolumn{1}{c |}{$EC$} & \multicolumn{1}{c}{$CC$} \\
 		\hline
-		1 & uberguineapig &  & uberguineapig \\
-		2 & mobil\_tipps & & mashable\\
-		3 & dloblack & & iphone\_mob \\
-		4 & iphonedevnews & & techcrunch \\
-		5 & iphone\_nikki & & tweetmeme \\
-		6 & macandiphone & & startonlinetwit \\
-		7 & riggledo & & razorianfly \\
-		8 & muenchner\_kindl & & sebastianpage \\
-		9 & danlaforce & & tuaw \\
-		10 & iphone\_jedi & & muenchner\_kindl \\
-		11 & tm\_iphone & & dudeman718 \\
-		12 & allthingsiphone & & tm\_iphone \\
-		13 & inflight\_wifi & & topiphone \\
-		14 & ipodtouchroom & & krapps \\
-		15 & esteves08 & & mayhemstudios \\
-		16 & supsappel & & kaisersoeze \\
-		17 & iphone3gupdates &  & theiphoneblog \\
-		18 & tramain360 & & bradgal \\
-		19 & csrandom & & scobleizer \\
-		20 & locaconpistolas & & tm\_technology
+		1 & uberguineapig & uberguineapig & uberguineapig \\
+		2 & mobil\_tipps & mobil\_tipps & mashable\\
+		3 & dloblack & iphone\_mob & iphone\_mob \\
+		4 & iphonedevnews & muenchner\_kindl & techcrunch \\
+		5 & iphone\_nikki & iphone\_jedi & tweetmeme \\
+		6 & macandiphone & maclounge & startonlinetwit \\
+		7 & riggledo & botiphone & razorianfly \\
+		8 & muenchner\_kindl & savvybanana & sebastianpage \\
+		9 & danlaforce & ezf\_executives & tuaw \\
+		10 & iphone\_jedi & kaisersoeze & muenchner\_kindl \\
+		11 & tm\_iphone & tommytrc & dudeman718 \\
+		12 & allthingsiphone & magicbaseball1 & tm\_iphone \\
+		13 & inflight\_wifi & flipbooks & topiphone \\
+		14 & ipodtouchroom & jwforson & krapps \\
+		15 & esteves08 & the\_borg & mayhemstudios \\
+		16 & supsappel & bildarchiv & kaisersoeze \\
+		17 & iphone3gupdates & shellykramer & theiphoneblog \\
+		18 & tramain360 & randomslagathor & bradgal \\
+		19 & csrandom & appgirlreviews & scobleizer \\
+		20 & locaconpistolas & earthxplorer & tm\_technology
 	\end{tabular}
 	\caption{Top 20 users in \texttt{twitter-larger} according to different measures.}
 	\label{tab:larger-top-users}
@@ -275,6 +278,9 @@ It could still be possible to compute the rankings, as the eccentricity bounds f
 \lstinputlisting[language=python]{preprocess.py}
 \pagebreak
 
+\section{Makefile}
+\lstinputlisting[language=make]{Makefile}
+\pagebreak
 
 \section{parser.cpp}
 
@@ -294,4 +300,16 @@ It could still be possible to compute the rankings, as the eccentricity bounds f
 
 \pagebreak
 
+\section{eccentricity.cpp}
+This file contains the method used to compute the eccentricity of all nodes and the diameter of the network. It is adapted from the presentation \emph{Determining the Diameter of Small World Networks} by F.W. Takes and W.A. Kosters. The original presentation containing the algorithm can be found at \url{http://liacs.leidenuniv.nl/~takesfw/SNACS/diameter.pdf}.
+
+\lstinputlisting[language=c++]{eccentricity.cpp}
+
+\pagebreak
+
+\section{closeness.cpp}
+
+This file contains the method used to approximate the closeness of a particular node.
+
+\lstinputlisting[language=c++]{closeness.cpp}
 \end{document}

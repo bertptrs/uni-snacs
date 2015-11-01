@@ -15,12 +15,12 @@ def main():
             it = 2
             continue
 
-        parts = line.split('\t')
+        parts = re.split('\s+', line)
         mapping[parts[0]] = parts[1].strip()
 
     for line in sys.stdin:
-        parts = line.split('\t')
-        print mapping[parts[0]], parts[1].strip()
+        parts = re.split('\s+', line)
+        print mapping[parts[0]]
 
 if __name__ == "__main__":
     main()
